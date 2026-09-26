@@ -6,7 +6,7 @@
     --page: #f9f9f7; --surface: #fcfcfb; --surface-2: #f3f2ee;
     --ink: #0b0b0b; --ink-2: #52514e; --ink-muted: #898781;
     --hair: #e1e0d9; --axis: #c3c2b7; --accent: #2a78d6; --accent-ink:#fff;
-    --pos-700:#0d366b; --pos-500:#256abf; --pos-300:#6da7ec; --pos-100:#cde2fb;
+    --pos-700:#14532d; --pos-500:#2f9e44; --pos-300:#86d68b; --pos-100:#dcf5dc;
     --neg-100:#f9d9d8; --neg-300:#ec9291; --neg-500:#d75352; --neg-700:#7a1a19;
     --mid:#f0efec; --ring: rgba(11,11,11,0.10);
     color-scheme: light;
@@ -16,7 +16,7 @@
       --page:#0d0d0d; --surface:#1a1a19; --surface-2:#232322;
       --ink:#fff; --ink-2:#c3c2b7; --ink-muted:#898781; --hair:#2c2c2a; --axis:#383835;
       --accent:#3987e5;
-      --pos-700:#cde2fb; --pos-500:#5598e7; --pos-300:#1c5cab; --pos-100:#104281;
+      --pos-700:#b9f6c0; --pos-500:#5fcf74; --pos-300:#2e8f45; --pos-100:#163f22;
       --neg-100:#5a1f1e; --neg-300:#8a2e2c; --neg-500:#c9524f; --neg-700:#f2b3b1;
       --mid:#383835; --ring: rgba(255,255,255,0.10);
       color-scheme: dark;
@@ -26,7 +26,7 @@
     --page:#0d0d0d; --surface:#1a1a19; --surface-2:#232322;
     --ink:#fff; --ink-2:#c3c2b7; --ink-muted:#898781; --hair:#2c2c2a; --axis:#383835;
     --accent:#3987e5;
-    --pos-700:#cde2fb; --pos-500:#5598e7; --pos-300:#1c5cab; --pos-100:#104281;
+    --pos-700:#b9f6c0; --pos-500:#5fcf74; --pos-300:#2e8f45; --pos-100:#163f22;
     --neg-100:#5a1f1e; --neg-300:#8a2e2c; --neg-500:#c9524f; --neg-700:#f2b3b1;
     --mid:#383835; --ring: rgba(255,255,255,0.10);
     color-scheme: dark;
@@ -134,29 +134,21 @@
         <button class="play-btn" id="play-btn" aria-label="Play through ratios" aria-pressed="false">
           <svg id="play-icon" width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M2 1l9 5-9 5V1z"/></svg>
         </button>
-        <input type="range" id="ratio-slider" min="0" max="12" step="1" value="4">
+        <input type="range" id="ratio-slider" min="0" max="13" step="1" value="5">
         <span class="ratio-readout" id="ratio-readout">3.00×<span class="tp">TP 9.0 ATR</span></span>
       </div>
     </div>
   </div>
 
   <div class="panel stage">
-    <div class="axis-caption">rows: min_current_width_atr (1–8) · columns: untouched lookback (70–140, step 5)</div>
+    <div class="axis-caption">rows: min_current_width_atr (1–8) · columns: untouched lookback (70–140, step 5) · frame 0 is the fixed TP/SL=3/3 reference, compressed onto this same 8×15 grid (14 of 238 reference candidates fall outside it and are dropped)</div>
     <table class="heat" id="heat-table" aria-label="Width by lookback heatmap"></table>
     <div class="legend">
       <span>loss</span><span class="legend-ramp" aria-hidden="true"></span><span>profit — diverging at breakeven, scaled per frame</span>
     </div>
     <div class="filmstrip">
-      <div class="axis-caption">all 13 frames — click to jump</div>
+      <div class="axis-caption">all 14 frames — frame 0 = reference 3/3 · click to jump</div>
       <div class="filmstrip-track" id="filmstrip"></div>
-    </div>
-  </div>
-
-  <div class="panel stage">
-    <div class="axis-caption">reference · fixed TP/SL = 3 ATR / 3 ATR (no ratio dimension) · 238 candidates · same cell metric as above</div>
-    <table class="heat" id="ref-heat-table" aria-label="Reference width by lookback heatmap, TP/SL=3/3"></table>
-    <div class="legend">
-      <span>loss</span><span class="legend-ramp" aria-hidden="true"></span><span>profit — diverging at breakeven</span>
     </div>
   </div>
 
@@ -191,20 +183,33 @@ const METRIC_META = {
   trades:             { label:"Trades",        fmt: v => Math.round(v).toLocaleString("en-US"), diverging:false },
 };
 
-let state = { metric: "net_pnl", ratioIdx: 4, playing: false, timer: null };
+let state = { metric: "net_pnl", frameIdx: 5, playing: false, timer: null };
+// frameIdx 0 = reference (TP/SL=3/3), compressed onto the WIDTHS×LOOKBACKS grid; frameIdx i>0 = RATIOS[i-1]
 
+function percentileRank(v, sorted){
+  if (sorted.length <= 1) return 0.5;
+  let lo=0, hi=sorted.length;
+  while(lo<hi){ const mid=(lo+hi)>>1; if(sorted[mid]<v) lo=mid+1; else hi=mid; }
+  const lessCount = lo;
+  lo=0; hi=sorted.length;
+  while(lo<hi){ const mid=(lo+hi)>>1; if(sorted[mid]<=v) lo=mid+1; else hi=mid; }
+  const leCount = lo;
+  const rank = (lessCount+leCount-1)/2;
+  return rank/(sorted.length-1);
+}
 function colorFor(metric, value, domain){
   const meta = METRIC_META[metric];
   if (!meta.diverging){
-    const t = domain.max === domain.min ? 0.5 : (value - domain.min) / (domain.max - domain.min);
+    const t = percentileRank(value, domain.all);
     return mixVar(["--pos-100","--pos-300","--pos-500","--pos-700"], t);
   }
   const center = meta.center !== undefined ? meta.center : 0;
-  const span = Math.max(Math.abs(domain.max - center), Math.abs(domain.min - center)) || 1;
-  const t = (value - center) / span;
-  const at = Math.min(Math.abs(t), 1);
-  const ramp = t >= 0 ? ["--mid","--pos-300","--pos-500","--pos-700"] : ["--mid","--neg-300","--neg-500","--neg-700"];
-  return mixVar(ramp, at);
+  if (value >= center){
+    const t = percentileRank(value, domain.pos);
+    return mixVar(["--mid","--pos-300","--pos-500","--pos-700"], t);
+  }
+  const t = 1 - percentileRank(value, domain.neg);
+  return mixVar(["--mid","--neg-300","--neg-500","--neg-700"], t);
 }
 function mixVar(varNames, t){
   const stops = varNames.map(v => getComputedStyle(document.body).getPropertyValue(v).trim());
@@ -219,23 +224,44 @@ function mixHex(a,b,t){
 }
 function relLuma(rgbStr){ const m = rgbStr.match(/\d+/g).map(Number); const [r,g,b] = m.map(v => v/255); return 0.2126*r + 0.7152*g + 0.0722*b; }
 
+function buildDomain(vals, metric){
+  const meta = METRIC_META[metric];
+  const center = meta.center !== undefined ? meta.center : 0;
+  if (!vals.length) return {min:0,max:1,all:[],pos:[],neg:[]};
+  return {
+    min: Math.min(...vals), max: Math.max(...vals),
+    all: [...vals].sort((a,b)=>a-b),
+    pos: vals.filter(v=>v>=center).sort((a,b)=>a-b),
+    neg: vals.filter(v=>v<center).sort((a,b)=>a-b),
+  };
+}
+
 function domainFor(metric, ratio){
   const vals = [];
   for (const w of WIDTHS) for (const lb of LOOKBACKS){
     const row = index[`${w}|${lb}|${ratio.toFixed(2)}`];
     if (row && row[metric] !== null && row[metric] !== undefined) vals.push(row[metric]);
   }
-  if (!vals.length) return {min:0,max:1};
-  return { min: Math.min(...vals), max: Math.max(...vals) };
+  return buildDomain(vals, metric);
+}
+
+function refDomainFor(metric){
+  const vals = [];
+  for (const w of WIDTHS) for (const lb of LOOKBACKS){
+    const row = refIndex[`${w}|${lb}`];
+    if (row && row[metric] !== null && row[metric] !== undefined) vals.push(row[metric]);
+  }
+  return buildDomain(vals, metric);
 }
 
 const tooltip = document.getElementById("tooltip");
 
 function renderTable(){
-  const ratio = RATIOS[state.ratioIdx];
+  const isRef = state.frameIdx === 0;
+  const ratio = isRef ? null : RATIOS[state.frameIdx - 1];
   const metric = state.metric;
   const meta = METRIC_META[metric];
-  const domain = domainFor(metric, ratio);
+  const domain = isRef ? refDomainFor(metric) : domainFor(metric, ratio);
 
   const table = document.getElementById("heat-table");
   table.innerHTML = "";
@@ -253,7 +279,7 @@ function renderTable(){
     tr.appendChild(rowHead);
     for (const lb of LOOKBACKS){
       const td = document.createElement("td");
-      const row = index[`${w}|${lb}|${ratio.toFixed(2)}`];
+      const row = isRef ? refIndex[`${w}|${lb}`] : index[`${w}|${lb}|${ratio.toFixed(2)}`];
       const cell = document.createElement("div");
       cell.className = "cell";
       if (row && row[metric] !== null && row[metric] !== undefined){
@@ -261,51 +287,7 @@ function renderTable(){
         cell.style.background = bg;
         cell.style.color = relLuma(bg) > 0.55 ? "var(--ink)" : "#fff";
         cell.innerHTML = `<span class="v">${meta.fmt(row[metric])}</span><span class="t">${Math.round(row.trades)}t</span>`;
-        cell.addEventListener("mousemove", (e) => showTooltip(e, row));
-        cell.addEventListener("mouseleave", hideTooltip);
-      }
-      td.appendChild(cell);
-      tr.appendChild(td);
-    }
-    tbody.appendChild(tr);
-  }
-  table.appendChild(tbody);
-}
-
-function refDomainFor(metric){
-  const vals = REF_DATA.map(d => d[metric]).filter(v => v !== null && v !== undefined);
-  if (!vals.length) return {min:0,max:1};
-  return { min: Math.min(...vals), max: Math.max(...vals) };
-}
-
-function renderRefTable(){
-  const metric = state.metric;
-  const meta = METRIC_META[metric];
-  const domain = refDomainFor(metric);
-  const table = document.getElementById("ref-heat-table");
-  table.innerHTML = "";
-  const thead = document.createElement("thead");
-  const htr = document.createElement("tr");
-  htr.innerHTML = `<th class="corner"></th>` + REF_LOOKBACKS.map(lb => `<th>${lb}</th>`).join("");
-  thead.appendChild(htr);
-  table.appendChild(thead);
-  const tbody = document.createElement("tbody");
-  for (const w of REF_WIDTHS){
-    const tr = document.createElement("tr");
-    const rowHead = document.createElement("th");
-    rowHead.textContent = "w=" + w;
-    tr.appendChild(rowHead);
-    for (const lb of REF_LOOKBACKS){
-      const td = document.createElement("td");
-      const row = refIndex[`${w}|${lb}`];
-      const cell = document.createElement("div");
-      cell.className = "cell";
-      if (row && row[metric] !== null && row[metric] !== undefined){
-        const bg = colorFor(metric, row[metric], domain);
-        cell.style.background = bg;
-        cell.style.color = relLuma(bg) > 0.55 ? "var(--ink)" : "#fff";
-        cell.innerHTML = `<span class="v">${meta.fmt(row[metric])}</span><span class="t">${Math.round(row.trades)}t</span>`;
-        cell.addEventListener("mousemove", (e) => showTooltip(e, {...row, ratio: 1.0, __ref: true}));
+        cell.addEventListener("mousemove", (e) => showTooltip(e, isRef ? {...row, __ref: true} : row));
         cell.addEventListener("mouseleave", hideTooltip);
       }
       td.appendChild(cell);
@@ -345,39 +327,45 @@ function showTooltip(e, row){
 }
 function hideTooltip(){ tooltip.classList.remove("show"); }
 
+const FRAME_COUNT = RATIOS.length + 1; // ref + 13 ratio frames
+
 function renderFilmstrip(){
   const strip = document.getElementById("filmstrip");
   strip.innerHTML = "";
-  RATIOS.forEach((ratio, i) => {
+  for (let i = 0; i < FRAME_COUNT; i++){
+    const isRef = i === 0;
+    const ratio = isRef ? null : RATIOS[i - 1];
     const frame = document.createElement("div");
     frame.className = "frame";
     frame.setAttribute("role","button");
     frame.setAttribute("tabindex","0");
-    frame.setAttribute("aria-pressed", i === state.ratioIdx ? "true" : "false");
-    frame.innerHTML = `<div class="fr-label">${ratio.toFixed(2)}×</div><div class="frame-grid"></div>`;
-    const domain = domainFor("net_pnl", ratio);
+    frame.setAttribute("aria-pressed", i === state.frameIdx ? "true" : "false");
+    frame.innerHTML = `<div class="fr-label">${isRef ? "ref 3/3" : ratio.toFixed(2)+"×"}</div><div class="frame-grid"></div>`;
+    const domain = isRef ? refDomainFor("net_pnl") : domainFor("net_pnl", ratio);
     const grid = frame.querySelector(".frame-grid");
     for (const w of WIDTHS){
       for (const lb of LOOKBACKS){
-        const row = index[`${w}|${lb}|${ratio.toFixed(2)}`];
+        const row = isRef ? refIndex[`${w}|${lb}`] : index[`${w}|${lb}|${ratio.toFixed(2)}`];
         const sq = document.createElement("div");
         if (row) sq.style.background = colorFor("net_pnl", row.net_pnl, domain);
         grid.appendChild(sq);
       }
     }
-    frame.addEventListener("click", () => { state.ratioIdx = i; sync(); });
-    frame.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); state.ratioIdx = i; sync(); } });
+    frame.addEventListener("click", () => { state.frameIdx = i; sync(); });
+    frame.addEventListener("keydown", (e) => { if (e.key === "Enter" || e.key === " "){ e.preventDefault(); state.frameIdx = i; sync(); } });
     strip.appendChild(frame);
-  });
+  }
 }
 
 function sync(){
-  const ratio = RATIOS[state.ratioIdx];
-  document.getElementById("ratio-slider").value = state.ratioIdx;
-  document.getElementById("ratio-readout").innerHTML = `${ratio.toFixed(2)}×<span class="tp">TP ${(ratio*3).toFixed(2)} ATR</span>`;
-  document.querySelectorAll(".filmstrip .frame").forEach((f,i) => f.setAttribute("aria-pressed", i === state.ratioIdx ? "true":"false"));
+  const isRef = state.frameIdx === 0;
+  const ratio = isRef ? null : RATIOS[state.frameIdx - 1];
+  document.getElementById("ratio-slider").value = state.frameIdx;
+  document.getElementById("ratio-readout").innerHTML = isRef
+    ? `ref 3/3<span class="tp">TP/SL fixed, no ratio</span>`
+    : `${ratio.toFixed(2)}×<span class="tp">TP ${(ratio*3).toFixed(2)} ATR</span>`;
+  document.querySelectorAll(".filmstrip .frame").forEach((f,i) => f.setAttribute("aria-pressed", i === state.frameIdx ? "true":"false"));
   renderTable();
-  renderRefTable();
 }
 
 document.getElementById("metric-toggle").addEventListener("click", (e) => {
@@ -386,9 +374,8 @@ document.getElementById("metric-toggle").addEventListener("click", (e) => {
   state.metric = btn.dataset.metric;
   document.querySelectorAll("#metric-toggle button").forEach(b => b.setAttribute("aria-pressed", b === btn ? "true":"false"));
   renderTable();
-  renderRefTable();
 });
-document.getElementById("ratio-slider").addEventListener("input", (e) => { state.ratioIdx = Number(e.target.value); sync(); });
+document.getElementById("ratio-slider").addEventListener("input", (e) => { state.frameIdx = Number(e.target.value); sync(); });
 
 const playBtn = document.getElementById("play-btn");
 playBtn.addEventListener("click", () => {
@@ -398,7 +385,7 @@ playBtn.addEventListener("click", () => {
     ? '<rect x="1" y="1" width="3.4" height="10" rx="0.5"/><rect x="7.6" y="1" width="3.4" height="10" rx="0.5"/>'
     : '<path d="M2 1l9 5-9 5V1z"/>';
   if (state.playing){
-    state.timer = setInterval(() => { state.ratioIdx = (state.ratioIdx + 1) % RATIOS.length; sync(); }, 1100);
+    state.timer = setInterval(() => { state.frameIdx = (state.frameIdx + 1) % FRAME_COUNT; sync(); }, 1100);
   } else {
     clearInterval(state.timer);
   }
