@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "test_id": "width_x_untouched_x_ratio_3d_combined",
+  "ticker": "BTCUSDT.P",
+  "base_timeframe": "5m",
+  "anchor_stack": {"fast": 100, "anchor": 200, "slow": 500},
+  "anchor_label": "ema200",
+
+  "kind": "merged_view",
+  "merged_from": [
+    {
+      "canonical_id": "BTCUSDT.P/ema200/width_x_untouched_x_ratio_3d",
+      "min_current_width_atr": {"start": 1, "stop": 8, "step": 1},
+      "row_count": 1560
+    },
+    {
+      "canonical_id": "BTCUSDT.P/ema200/width_x_untouched_x_ratio_3d_ext_w09_14",
+      "min_current_width_atr": {"start": 9, "stop": 14, "step": 1},
+      "row_count": 1170
+    }
+  ],
+  "note": "This directory holds no independently computed evidence. runs.csv is a verbatim concatenation of the two source runs.csv files (no recompute, no row modification); each row keeps its original source_batch_id, run_id and market_data_hash for provenance. Raw evidence in both source directories is untouched.",
+
+  "varied_params": [
+    {
+      "column": "min_current_width_atr",
+      "type": "number",
+      "label": "Stack width",
+      "unit": "ATR",
+      "component_id": "anchor_stack_width_setup",
+      "component_param": "min_current_width_atr"
+    },
+    {
+      "column": "untouched_lookback",
+      "type": "integer",
+      "label": "Untouched anchor lookback",
+      "unit": "bars",
+      "component_id": "untouched_anchor_setup",
+      "component_param": "lookback"
+    },
+    {
+      "column": "tp_sl_ratio",
+      "type": "number",
+      "label": "TP/SL ratio",
+      "unit": "ratio (SL fixed at 3 ATR)",
+      "component_id": "atr_take_profit",
+      "component_param": "distance.multiplier / sl_distance.multiplier"
+    }
+  ],
+
+  "search_space": {
+    "min_current_width_atr": {"start": 1, "stop": 14, "step": 1},
+    "untouched_lookback": {"start": 70, "stop": 140, "step": 5},
+    "tp_sl_ratio": {"start": 2.0, "stop": 5.0, "step": 0.25}
+  },
+
+  "row_count": 2730,
+  "unique_combinations": 2730,
+  "duplicate_rows": 0,
+
+  "identity_columns": ["candidate_id", "source_batch_id", "market_data_hash", "run_id", "instance_id"]
+}
