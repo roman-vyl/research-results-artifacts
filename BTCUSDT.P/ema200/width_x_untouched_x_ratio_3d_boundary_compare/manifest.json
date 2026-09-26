@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "test_id": "width_x_untouched_x_ratio_3d_boundary_compare",
+  "ticker": "BTCUSDT.P",
+  "base_timeframe": "5m",
+  "anchor_stack": {"fast": 100, "anchor": 200, "slow": 500},
+  "anchor_label": "ema200",
+
+  "kind": "merged_view",
+  "merged_from": [
+    {
+      "canonical_id": "BTCUSDT.P/ema200/width_x_untouched_x_ratio_3d_combined",
+      "filter": {"min_current_width_atr": [7, 8, 9, 10], "tp_sl_ratio": 5.0},
+      "row_count": 60
+    },
+    {
+      "canonical_id": "BTCUSDT.P/ema200/width_x_untouched_x_ratio_3d_boundary_w07_10_r55_60",
+      "filter": {"tp_sl_ratio": [5.5, 6.0]},
+      "row_count": 120
+    }
+  ],
+  "note": "Direct 5.0 -> 5.5 -> 6.0 comparison for width 7..10, isolated from the rest of the grid. runs.csv is a verbatim row subset/concatenation of the two source runs.csv files (no recompute, no row modification); every row keeps its original source_batch_id, run_id and market_data_hash for provenance. Raw evidence in both source directories is untouched. All standard aggregate and long/short metrics (trade count, win rate, profit factor, cumulative R, max drawdown, etc.) are present per row exactly as in the source runs.csv schema.",
+
+  "varied_params": [
+    {
+      "column": "min_current_width_atr",
+      "type": "number",
+      "label": "Stack width",
+      "unit": "ATR",
+      "component_id": "anchor_stack_width_setup",
+      "component_param": "min_current_width_atr"
+    },
+    {
+      "column": "untouched_lookback",
+      "type": "integer",
+      "label": "Untouched anchor lookback",
+      "unit": "bars",
+      "component_id": "untouched_anchor_setup",
+      "component_param": "lookback"
+    },
+    {
+      "column": "tp_sl_ratio",
+      "type": "number",
+      "label": "TP/SL ratio",
+      "unit": "ratio (SL fixed at 3 ATR)",
+      "component_id": "atr_take_profit",
+      "component_param": "distance.multiplier / sl_distance.multiplier"
+    }
+  ],
+
+  "search_space": {
+    "min_current_width_atr": {"values": [7, 8, 9, 10]},
+    "untouched_lookback": {"start": 70, "stop": 140, "step": 5},
+    "tp_sl_ratio": {"values": [5.0, 5.5, 6.0]}
+  },
+
+  "row_count": 180,
+  "unique_combinations": 180,
+  "duplicate_rows": 0,
+
+  "identity_columns": ["candidate_id", "source_batch_id", "market_data_hash", "run_id", "instance_id"]
+}
