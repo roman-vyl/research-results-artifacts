@@ -1,0 +1,76 @@
+{
+  "schema_version": 1,
+  "test_id": "width_sweep",
+  "ticker": "ETHUSDT.P",
+  "base_timeframe": "5m",
+  "anchor_stack": {
+    "fast": 100,
+    "anchor": 200,
+    "slow": 500
+  },
+  "anchor_label": "ema200",
+  "varied_params": [
+    {
+      "column": "min_current_width_atr",
+      "type": "number",
+      "label": "Stack width",
+      "unit": "ATR",
+      "component_id": "anchor_stack_width_setup",
+      "component_param": "min_current_width_atr"
+    }
+  ],
+  "fixed_params": {
+    "entry": "touch_anchor",
+    "tp_atr_multiplier": 3.0,
+    "sl_atr_multiplier": 3.0,
+    "atr_period": 48,
+    "atr_timeframe": "base",
+    "min_recent_width_atr": 4.0,
+    "width_lookback_bars": 80,
+    "untouched_anchor_setup": "off",
+    "trade_sides": [
+      "long",
+      "short"
+    ],
+    "initial_equity": 10000,
+    "sizing": "full_equity (production default)",
+    "entry_fee_rate": 0,
+    "exit_fee_rate": 0,
+    "entry_slippage_rate": 0,
+    "blockers": [],
+    "contexts": {},
+    "signal_exits": "none",
+    "managed_policy_enabled": false
+  },
+  "metric_columns": {
+    "aggregate": [
+      "realised_trade_count",
+      "r_eligible_trade_count",
+      "win_rate",
+      "profit_factor",
+      "cumulative_gross_r",
+      "cumulative_net_r",
+      "return_pct",
+      "max_drawdown_pct"
+    ],
+    "long": [
+      "long_trades",
+      "long_win_rate",
+      "long_cumulative_gross_r",
+      "long_cumulative_net_r"
+    ],
+    "short": [
+      "short_trades",
+      "short_win_rate",
+      "short_cumulative_gross_r",
+      "short_cumulative_net_r"
+    ]
+  },
+  "identity_columns": [
+    "candidate_id",
+    "source_batch_id",
+    "market_data_hash",
+    "run_id",
+    "instance_id"
+  ]
+}
