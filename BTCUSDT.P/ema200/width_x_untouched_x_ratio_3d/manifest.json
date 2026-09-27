@@ -30,14 +30,22 @@
       "column": "tp_sl_ratio",
       "type": "number",
       "label": "TP/SL ratio",
-      "unit": "ratio (SL fixed at 3 ATR)",
+      "unit": "ratio (TP = sl_atr_multiplier x ratio)",
       "component_id": "atr_take_profit",
       "component_param": "distance.multiplier / sl_distance.multiplier"
+    },
+    {
+      "column": "sl_atr_multiplier",
+      "type": "number",
+      "label": "Stop-loss distance",
+      "unit": "ATR",
+      "component_id": "atr_stop_loss",
+      "component_param": "distance.multiplier",
+      "note": "Added as a 4th varied dimension by the sl_extension stage below. Was a fixed_param (3.0 only) for the base/width_extension/ratio_boundary_extension stages."
     }
   ],
   "fixed_params": {
     "entry": "touch_anchor",
-    "sl_atr_multiplier": 3.0,
     "atr_period": 48,
     "atr_timeframe": "base",
     "min_recent_width_atr": 4.0,
@@ -104,11 +112,16 @@
       "start": 2.0,
       "stop": 5.0,
       "step": 0.25,
-      "note": "5.5 and 6.0 additionally computed for min_current_width_atr in {7,8,9,10} only (boundary extension, not a full rectangle)"
+      "note": "5.5 and 6.0 additionally computed for min_current_width_atr in {7,8,9,10} only, at sl_atr_multiplier=3.0 (boundary extension, not a full rectangle)"
+    },
+    "sl_atr_multiplier": {
+      "values": [3.0, 3.5],
+      "note": "3.0 is the base value used by base/width_extension/ratio_boundary_extension stages (2850 rows). 3.5 is a full 14x15x13 rectangle added by the sl_extension stage (2730 rows), ratio range 2.0-5.0 only (the 5.5/6.0 boundary points exist only at sl=3.0)."
     }
   },
-  "row_count": 2850,
-  "unique_combinations": 2850,
+  "identity_columns_4d": ["min_current_width_atr", "untouched_lookback", "tp_sl_ratio", "sl_atr_multiplier"],
+  "row_count": 5580,
+  "unique_combinations": 5580,
   "duplicate_rows": 0,
   "history": [
     {
@@ -168,7 +181,19 @@
       "source_batch_ids": [
         "lab_3d_boundary_w07_10_r55_60"
       ]
+    },
+    {
+      "stage": "sl_extension",
+      "row_count": 2730,
+      "width_range": [1, 14],
+      "lookback_range": [70, 140],
+      "ratio_range": [2.0, 5.0],
+      "sl_atr_multiplier": 3.5,
+      "note": "Full 14x15x13 rectangle at a new stop-loss distance (3.5 ATR instead of the base 3.0 ATR). TP computed by the same canonical ratio semantics: tp_atr_multiplier = sl_atr_multiplier x tp_sl_ratio. Executed as a single 2730-candidate range-batch (no width/lookback/ratio chunking), one Strategy Engine process, one EvaluationContext. Wall time ~6039s (2026-09-27T18:47:03Z -> ~20:27:42Z), 0 failed. Not compared/interpreted here; adds sl_atr_multiplier as this dataset's 4th varied dimension.",
+      "source_batch_ids": [
+        "lab_4d_sl3_5_full"
+      ]
     }
   ],
-  "note": "Canonical merged dataset for this study. Combines base (width 1-8), width extension (width 9-14), and ratio boundary extension (ratio 5.5/6.0 for width 7-10 only) into one runs.csv, verbatim rows with original run_id/source_batch_id/market_data_hash preserved. No recompute. 2850 unique rows, no duplicates. Superseded folders: width_x_untouched_x_ratio_3d_ext_w09_14, _combined, _boundary_w07_10_r55_60, _boundary_compare (all merged/derived-view only, no unique evidence lost)."
+  "note": "Canonical merged dataset for this study. Combines base (width 1-8), width extension (width 9-14), ratio boundary extension (ratio 5.5/6.0 for width 7-10 only, sl=3.0), and sl extension (full width/lookback/ratio rectangle at sl=3.5) into one runs.csv, verbatim rows with original run_id/source_batch_id/market_data_hash preserved. No recompute. 5580 unique rows (identity = width, lookback, ratio, sl_atr_multiplier), no duplicates. Superseded folders: width_x_untouched_x_ratio_3d_ext_w09_14, _combined, _boundary_w07_10_r55_60, _boundary_compare (all merged/derived-view only, no unique evidence lost)."
 }
