@@ -5,6 +5,6 @@
 # lookup, but never committed: too large/numerous for git, and not needed to
 # reproduce or verify canonical evidence (identity_columns has no filesystem
 # path). See sources.json -> source_batch_id / run_id to locate a given run.
-*/ema200/*/runs/
-*/ema200/_scratch/
+*/ema*/*/runs/
+*/ema*/_scratch/
 _unclassified/
