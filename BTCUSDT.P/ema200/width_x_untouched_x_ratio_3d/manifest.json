@@ -115,13 +115,13 @@
       "note": "5.5 and 6.0 additionally computed for min_current_width_atr in {7,8,9,10} only, at sl_atr_multiplier=3.0 (boundary extension, not a full rectangle)"
     },
     "sl_atr_multiplier": {
-      "values": [3.0, 3.5],
-      "note": "3.0 is the base value used by base/width_extension/ratio_boundary_extension stages (2850 rows). 3.5 is a full 14x15x13 rectangle added by the sl_extension stage (2730 rows), ratio range 2.0-5.0 only (the 5.5/6.0 boundary points exist only at sl=3.0)."
+      "values": [2.75, 3.0, 3.5],
+      "note": "3.0 is the base value used by base/width_extension/ratio_boundary_extension stages (2850 rows). 3.5 and 2.75 are each a full 14x15x13 rectangle (2730 rows each), ratio range 2.0-5.0 only (the 5.5/6.0 boundary points exist only at sl=3.0)."
     }
   },
   "identity_columns_4d": ["min_current_width_atr", "untouched_lookback", "tp_sl_ratio", "sl_atr_multiplier"],
-  "row_count": 5580,
-  "unique_combinations": 5580,
+  "row_count": 8310,
+  "unique_combinations": 8310,
   "duplicate_rows": 0,
   "history": [
     {
@@ -193,7 +193,19 @@
       "source_batch_ids": [
         "lab_4d_sl3_5_full"
       ]
+    },
+    {
+      "stage": "sl_extension_2",
+      "row_count": 2730,
+      "width_range": [1, 14],
+      "lookback_range": [70, 140],
+      "ratio_range": [2.0, 5.0],
+      "sl_atr_multiplier": 2.75,
+      "note": "Full 14x15x13 rectangle at a second new stop-loss distance (2.75 ATR, testing the opposite boundary from the closed SL=3.0->3.5 direction per findings f017/f018). Same canonical ratio semantics: tp_atr_multiplier = sl_atr_multiplier x tp_sl_ratio. Executed as a single 2730-candidate range-batch, one Strategy Engine process, one EvaluationContext. Wall time ~5147s (2026-09-28T08:04:47Z -> ~09:45:34Z), 0 failed.",
+      "source_batch_ids": [
+        "lab_4d_sl2_75_full"
+      ]
     }
   ],
-  "note": "Canonical merged dataset for this study. Combines base (width 1-8), width extension (width 9-14), ratio boundary extension (ratio 5.5/6.0 for width 7-10 only, sl=3.0), and sl extension (full width/lookback/ratio rectangle at sl=3.5) into one runs.csv, verbatim rows with original run_id/source_batch_id/market_data_hash preserved. No recompute. 5580 unique rows (identity = width, lookback, ratio, sl_atr_multiplier), no duplicates. Superseded folders: width_x_untouched_x_ratio_3d_ext_w09_14, _combined, _boundary_w07_10_r55_60, _boundary_compare (all merged/derived-view only, no unique evidence lost)."
+  "note": "Canonical merged dataset for this study. Combines base (width 1-8), width extension (width 9-14), ratio boundary extension (ratio 5.5/6.0 for width 7-10 only, sl=3.0), and two sl extensions (full width/lookback/ratio rectangles at sl=3.5 and sl=2.75) into one runs.csv, verbatim rows with original run_id/source_batch_id/market_data_hash preserved. No recompute. 8310 unique rows (identity = width, lookback, ratio, sl_atr_multiplier), no duplicates. Superseded folders: width_x_untouched_x_ratio_3d_ext_w09_14, _combined, _boundary_w07_10_r55_60, _boundary_compare (all merged/derived-view only, no unique evidence lost)."
 }
