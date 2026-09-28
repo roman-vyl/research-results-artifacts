@@ -3,14 +3,16 @@
   "test_id": "width_x_untouched_x_stop_x_ratio_4d",
   "ticker": "BTCUSDT.P",
   "base_timeframe": "5m",
-  "anchor_stack": {"fast": 200, "anchor": 500, "slow": 1000},
+  "anchor_stack": {
+    "fast": 200,
+    "anchor": 500,
+    "slow": 1000
+  },
   "anchor_label": "ema500",
-
   "research_line": {
     "note": "Second experiment of the BTCUSDT.P / EMA500 research family (branch btc-ema500). Disjoint from width_x_untouched_x_symmetric_exit_3d in this same family: that experiment's ratio=1.0 (3/3,4/4,5/5) points are not part of this ratio=2.5..6.0 rectangle -- no Cartesian merge, no duplicates between the two experiments.",
     "template_source": "BTCUSDT.P/ema200/width_x_untouched_x_ratio_3d (fixed strategy/execution/data config read programmatically from its canonical request template)"
   },
-
   "varied_params": [
     {
       "column": "min_current_width_atr",
@@ -45,14 +47,34 @@
       "component_param": "distance.multiplier / sl_distance.multiplier"
     }
   ],
-
   "search_space": {
-    "min_current_width_atr": {"start": 3, "stop": 14, "step": 1},
-    "untouched_lookback": {"start": 20, "stop": 300, "step": 10},
-    "sl_atr_multiplier": {"values": [3, 4, 5]},
-    "tp_sl_ratio": {"start": 2.5, "stop": 6.0, "step": 0.5}
+    "min_current_width_atr": {
+      "start": 3,
+      "stop": 14,
+      "step": 1
+    },
+    "untouched_lookback": {
+      "start": 20,
+      "stop": 300,
+      "step": 10,
+      "note": "Full 20-300 range only for the base experiment (sl 3/4/5, ratio 2.5-6.0). All boundary-extension coverage (sl=6 full ratio range, and ratio 6.5-8.0 for any sl) is restricted to lookback 20-160 -- prior broad sweep showed the useful structural region concentrates at lower lookback, so the extension intentionally does not re-sweep 170-300."
+    },
+    "sl_atr_multiplier": {
+      "values": [
+        3,
+        4,
+        5,
+        6
+      ],
+      "note": "3/4/5 cover the full base rectangle (width 3-14 x lookback 20-300 x ratio 2.5-6.0). 6 exists ONLY over the boundary-extension coverage (lookback 20-160, ratio 2.5-6.0), see coverage_geometry below."
+    },
+    "tp_sl_ratio": {
+      "start": 2.5,
+      "stop": 8.0,
+      "step": 0.5,
+      "note": "2.5-6.0 covers the full base rectangle for sl in {3,4,5} (lookback 20-300) and, for sl=6, the boundary-extension subset (lookback 20-160). 6.5-8.0 exists ONLY over the boundary-extension coverage (lookback 20-160) for sl in {3,4,5,6}. This is NOT a full width x lookback x sl x ratio Cartesian rectangle -- see coverage_geometry."
+    }
   },
-
   "fixed_params": {
     "entry": "touch_anchor",
     "atr_period": 48,
@@ -60,7 +82,10 @@
     "min_recent_width_atr": 4.0,
     "width_lookback_bars": 80,
     "active_bars": 3,
-    "trade_sides": ["long", "short"],
+    "trade_sides": [
+      "long",
+      "short"
+    ],
     "initial_equity": 10000,
     "sizing": "full_equity (production default)",
     "entry_fee_rate": 0,
@@ -71,7 +96,6 @@
     "signal_exits": "none",
     "managed_policy_enabled": false
   },
-
   "metric_columns": {
     "aggregate": [
       "realised_trade_count",
@@ -96,10 +120,19 @@
       "short_cumulative_net_r"
     ]
   },
-
-  "identity_columns": ["candidate_id", "source_batch_id", "market_data_hash", "run_id", "instance_id"],
-  "identity_columns_4d": ["min_current_width_atr", "untouched_lookback", "sl_atr_multiplier", "tp_sl_ratio"],
-
+  "identity_columns": [
+    "candidate_id",
+    "source_batch_id",
+    "market_data_hash",
+    "run_id",
+    "instance_id"
+  ],
+  "identity_columns_4d": [
+    "min_current_width_atr",
+    "untouched_lookback",
+    "sl_atr_multiplier",
+    "tp_sl_ratio"
+  ],
   "execution": {
     "expected_candidates": 8352,
     "completed_candidates": 8352,
@@ -119,10 +152,85 @@
     "strategy_engine_restart_count_before": 0,
     "strategy_engine_restart_count_after": 0
   },
-
-  "row_count": 8352,
-  "unique_combinations": 8352,
+  "row_count": 12672,
+  "unique_combinations": 12672,
   "duplicate_rows": 0,
-
-  "notes": "Executed as a single 8352-candidate range-batch (lab_ema500_4d_stop_x_ratio), one Strategy Engine process, one EvaluationContext -- no width/lookback/stop-loss/ratio chunking. sources.json lists the single source batch_id. This is the largest single physical run in the BBB research evidence repo to date; also serves as a single-process performance baseline for this candidate set/scale."
+  "notes": "Executed as a single 8352-candidate range-batch (lab_ema500_4d_stop_x_ratio), one Strategy Engine process, one EvaluationContext -- no width/lookback/stop-loss/ratio chunking. sources.json lists the single source batch_id. This is the largest single physical run in the BBB research evidence repo to date; also serves as a single-process performance baseline for this candidate set/scale.",
+  "coverage_geometry": {
+    "note": "IMPORTANT: this dataset is NOT a full Cartesian rectangle of width x lookback x sl x ratio. Coverage is intentionally non-uniform -- do not fill, interpolate, or assume zero for missing cells. There are two coverage regions:",
+    "region_1_base": {
+      "source": "base experiment (lab_ema500_4d_stop_x_ratio)",
+      "width": [
+        3,
+        14
+      ],
+      "lookback": [
+        20,
+        300
+      ],
+      "sl_atr_multiplier": [
+        3,
+        4,
+        5
+      ],
+      "tp_sl_ratio": [
+        2.5,
+        6.0
+      ],
+      "row_count": 8352
+    },
+    "region_2_boundary_extension": {
+      "source": "boundary extension (lab_ema500_4d_boundary_ext_*, 5 chunks + 832 salvaged from an OOM-killed single-batch attempt)",
+      "width": [
+        3,
+        14
+      ],
+      "lookback": [
+        20,
+        160
+      ],
+      "subregion_2a": {
+        "sl_atr_multiplier": 6,
+        "tp_sl_ratio": [
+          2.5,
+          6.0
+        ],
+        "row_count": 1440,
+        "note": "new SL=6 over the already-explored ratio range"
+      },
+      "subregion_2b": {
+        "sl_atr_multiplier": [
+          3,
+          4,
+          5,
+          6
+        ],
+        "tp_sl_ratio": [
+          6.5,
+          8.0
+        ],
+        "row_count": 2880,
+        "note": "ratio continuation for all 4 SL values"
+      },
+      "row_count": 4320
+    },
+    "total_row_count": 12672,
+    "unique_4d_identities": 12672,
+    "duplicate_rows": 0
+  },
+  "history": [
+    {
+      "stage": "boundary_extension",
+      "row_count": 4320,
+      "note": "Right-boundary shape probe on two exit dimensions: new SL=6 over ratio 2.5-6.0, and ratio continuation 6.5-8.0 for SL in {3,4,5,6}. Both restricted to lookback 20-160 (not a lookback re-sweep) and width 3-14, per instruction -- prior broad sweep showed the useful structural region concentrates at lower lookback. TP computed via the same canonical ratio semantics (TP=SL*ratio). Original attempt as a single 4320-candidate range-batch was OOM-killed by the Docker Desktop VM's 8.32GB memory ceiling at 832/4320 candidates (strategy-engine RSS climbing past 6.6GB and still rising, exit code 137, OOMKilled=true) -- those 832 already-computed candidates were salvaged (their per-candidate summary metrics reconstructed from raw trades.json using the exact same formula as the batch orchestrator, verified byte-identical against a known official candidate summary before use) and NOT recomputed. The remaining 3488 were split into 5 coarse chunks along natural SL boundaries (608 + 720x4), each executed as its own single range-batch, one Strategy Engine process, sequential (no parallel workers), well below the OOM threshold observed. 4320/4320 completed across the salvage + 5 chunks, 0 failed, 0 duplicates, 0 missing planned identities, 0 overlap with the existing 8352-row base coverage. 6 distinct market_data_hash values (one per physical run attempt, each resolving the live 'full_available' window at a different wall-clock time) -- not a single shared hash across this stage, unlike single-range-batch experiments.",
+      "source_batch_ids": [
+        "lab_ema500_4d_boundary_ext_salvaged",
+        "lab_ema500_4d_boundary_ext_c1_sl6tail",
+        "lab_ema500_4d_boundary_ext_c2_sl3ratio",
+        "lab_ema500_4d_boundary_ext_c3_sl4ratio",
+        "lab_ema500_4d_boundary_ext_c4_sl5ratio",
+        "lab_ema500_4d_boundary_ext_c5_sl6ratio"
+      ]
+    }
+  ]
 }
