@@ -2,7 +2,7 @@
   "sources": [
     {
       "batch_id": "lab_ema1000_4d_stop_x_ratio_r5_c1_w05_09",
-      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d_r5_r6_extension/runs/lab_ema1000_4d_stop_x_ratio_r5_c1_w05_09",
+      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d/ratio_5_6_extension/runs/lab_ema1000_4d_stop_x_ratio_r5_c1_w05_09",
       "candidate_ids": [
         "w05-lb020-sl4-r5_0",
         "w05-lb020-sl5-r5_0",
@@ -1034,7 +1034,7 @@
     },
     {
       "batch_id": "lab_ema1000_4d_stop_x_ratio_r5_c2_w10_14",
-      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d_r5_r6_extension/runs/lab_ema1000_4d_stop_x_ratio_r5_c2_w10_14",
+      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d/ratio_5_6_extension/runs/lab_ema1000_4d_stop_x_ratio_r5_c2_w10_14",
       "candidate_ids": [
         "w10-lb020-sl4-r5_0",
         "w10-lb020-sl5-r5_0",
@@ -2066,7 +2066,7 @@
     },
     {
       "batch_id": "lab_ema1000_4d_stop_x_ratio_r5_c3_w15_19",
-      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d_r5_r6_extension/runs/lab_ema1000_4d_stop_x_ratio_r5_c3_w15_19",
+      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d/ratio_5_6_extension/runs/lab_ema1000_4d_stop_x_ratio_r5_c3_w15_19",
       "candidate_ids": [
         "w15-lb020-sl4-r5_0",
         "w15-lb020-sl5-r5_0",
@@ -3098,7 +3098,7 @@
     },
     {
       "batch_id": "lab_ema1000_4d_stop_x_ratio_r5_c4_w20_24",
-      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d_r5_r6_extension/runs/lab_ema1000_4d_stop_x_ratio_r5_c4_w20_24",
+      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d/ratio_5_6_extension/runs/lab_ema1000_4d_stop_x_ratio_r5_c4_w20_24",
       "candidate_ids": [
         "w20-lb020-sl4-r5_0",
         "w20-lb020-sl5-r5_0",
@@ -4130,7 +4130,7 @@
     },
     {
       "batch_id": "lab_ema1000_4d_stop_x_ratio_r6_c1_w05_09",
-      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d_r5_r6_extension/runs/lab_ema1000_4d_stop_x_ratio_r6_c1_w05_09",
+      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d/ratio_5_6_extension/runs/lab_ema1000_4d_stop_x_ratio_r6_c1_w05_09",
       "candidate_ids": [
         "w05-lb020-sl4-r6_0",
         "w05-lb020-sl5-r6_0",
@@ -5162,7 +5162,7 @@
     },
     {
       "batch_id": "lab_ema1000_4d_stop_x_ratio_r6_c2_w10_14",
-      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d_r5_r6_extension/runs/lab_ema1000_4d_stop_x_ratio_r6_c2_w10_14",
+      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d/ratio_5_6_extension/runs/lab_ema1000_4d_stop_x_ratio_r6_c2_w10_14",
       "candidate_ids": [
         "w10-lb020-sl4-r6_0",
         "w10-lb020-sl5-r6_0",
@@ -6194,7 +6194,7 @@
     },
     {
       "batch_id": "lab_ema1000_4d_stop_x_ratio_r6_c3_w15_19",
-      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d_r5_r6_extension/runs/lab_ema1000_4d_stop_x_ratio_r6_c3_w15_19",
+      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d/ratio_5_6_extension/runs/lab_ema1000_4d_stop_x_ratio_r6_c3_w15_19",
       "candidate_ids": [
         "w15-lb020-sl4-r6_0",
         "w15-lb020-sl5-r6_0",
@@ -7226,7 +7226,7 @@
     },
     {
       "batch_id": "lab_ema1000_4d_stop_x_ratio_r6_c4_w20_24",
-      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d_r5_r6_extension/runs/lab_ema1000_4d_stop_x_ratio_r6_c4_w20_24",
+      "artifact_path": "/Users/mcroma/BBB_data/research/analysis/BTCUSDT.P/ema1000/width_x_untouched_x_stop_x_ratio_4d/ratio_5_6_extension/runs/lab_ema1000_4d_stop_x_ratio_r6_c4_w20_24",
       "candidate_ids": [
         "w20-lb020-sl4-r6_0",
         "w20-lb020-sl5-r6_0",
