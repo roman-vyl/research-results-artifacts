@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "experiment_id": "btc_ema1000_width_x_untouched_x_stop_x_ratio_4d_r7_r8_extension",
+  "stage": "4d_high_ratio_exit_geometry_probe",
+  "status": "completed",
+  "ticker": "BTCUSDT.P",
+  "timeframe": "5m",
+  "anchor_stack": {
+    "fast": 500,
+    "anchor": 1000,
+    "slow": 2000
+  },
+  "candidate_count": 8120,
+  "source_batch_ids": [
+    "lab_ema1000_4d_stop_x_ratio_r7_c1_w05_09",
+    "lab_ema1000_4d_stop_x_ratio_r7_c2_w10_14",
+    "lab_ema1000_4d_stop_x_ratio_r7_c3_w15_19",
+    "lab_ema1000_4d_stop_x_ratio_r7_c4_w20_24",
+    "lab_ema1000_4d_stop_x_ratio_r8_c1_w05_09",
+    "lab_ema1000_4d_stop_x_ratio_r8_c2_w10_14",
+    "lab_ema1000_4d_stop_x_ratio_r8_c3_w15_19",
+    "lab_ema1000_4d_stop_x_ratio_r8_c4_w20_24"
+  ],
+  "canonical_runs_sha256": "cd08821247bf4b248ced68dd5846f28cf1748d91c3139928c7d9979e8dcc159f",
+  "next_stage": "Compare ratio=7/8 topology against the existing EMA1000 ratio=3/4/5/6 4D data."
+}
