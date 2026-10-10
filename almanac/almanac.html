@@ -1,0 +1,541 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Книжные метрики в картинках</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans+Condensed:wght@600&family=IBM+Plex+Sans:wght@400;600&display=swap" rel="stylesheet">
+<style>
+/* One reading column: intro, then four groups; each metric = text + good/bad chart pair side by side (stacked on phones) */
+:root{
+ --bg:#f4f6f8;--surface:#fff;--fg:#17202a;--muted:#5a6672;--line:#d9dfe5;--accent:#2f5d8a;--accent-soft:#e3ebf3;
+ --ok:#1f7a4d;--ok-bg:#ddf1e6;--bad:#a3302a;--bad-bg:#f6e0de;--ann:#b35c00;
+ --cu:#4f8f7a;--cd:#c0574e;--ema-a:#2f5d8a;--ema-f:#8aa4bd;--ema-s:#a9b2bb;
+ --shI:rgba(31,122,77,.07);--shR:rgba(163,48,42,.07);--hl:rgba(179,92,0,.09);
+ --f-display:"IBM Plex Sans Condensed","Arial Narrow",system-ui,sans-serif;--f-body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;--f-mono:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --bg:#11161b;--surface:#182028;--fg:#e3e8ed;--muted:#9aa7b3;--line:#2a3540;--accent:#7fb0e0;--accent-soft:#1c2a38;
+ --ok:#6fd39f;--ok-bg:#16301f;--bad:#f08a80;--bad-bg:#3a1f1d;--ann:#f0a050;--cu:#5fb49a;--cd:#e0766c;--ema-a:#7fb0e0;--ema-f:#5b7690;--ema-s:#56616c;
+ --shI:rgba(111,211,159,.07);--shR:rgba(240,138,128,.07);--hl:rgba(240,160,80,.1);color-scheme:dark}}
+:root[data-theme="dark"]{
+ --bg:#11161b;--surface:#182028;--fg:#e3e8ed;--muted:#9aa7b3;--line:#2a3540;--accent:#7fb0e0;--accent-soft:#1c2a38;
+ --ok:#6fd39f;--ok-bg:#16301f;--bad:#f08a80;--bad-bg:#3a1f1d;--ann:#f0a050;--cu:#5fb49a;--cd:#e0766c;--ema-a:#7fb0e0;--ema-f:#5b7690;--ema-s:#56616c;
+ --shI:rgba(111,211,159,.07);--shR:rgba(240,138,128,.07);--hl:rgba(240,160,80,.1);color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--f-body);font-size:15px;line-height:1.55}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:28px 64px;display:grid;gap:22px}
+h1{font-family:var(--f-display);font-weight:600;font-size:clamp(1.5rem,4vw,2.1rem);line-height:1.15;margin:0 0 8px;text-wrap:balance}
+h2{font-family:var(--f-display);font-weight:600;font-size:1.35rem;margin:0 0 4px}
+h3{margin:0;font-size:1.05rem;font-weight:600}
+p{margin:0 0 8px;max-width:80ch}
+.eyebrow{font-family:var(--f-mono);font-size:.74rem;letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.lead{background:var(--accent-soft);border-radius:8px;padding:16px 18px}
+.lead p:last-child{margin:0}
+.legend{display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.85rem;color:var(--muted)}
+.legend i{display:inline-block;width:18px;height:0;border-top:2px solid;vertical-align:middle;margin-right:6px}
+.grp{margin-top:18px;border-top:2px solid var(--line);padding-top:16px}
+.gl{font-family:var(--f-mono);color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 16px;min-width:0}
+.card header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 10px;margin-bottom:6px}
+.id{font-family:var(--f-mono);font-weight:500;color:var(--accent)}
+.chip{font-family:var(--f-mono);font-size:.72rem;padding:1px 8px;border-radius:999px;background:var(--accent-soft);color:var(--accent)}
+.f{font-family:var(--f-mono);font-size:.82rem;color:var(--muted)}
+.src{font-size:.82rem;color:var(--muted);margin:6px 0 0}
+.pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:12px;margin-top:6px}
+figure{margin:0;min-width:0;border:1px solid var(--line);border-radius:8px;padding:8px 8px 6px}
+figcaption{font-size:.85rem;margin-bottom:4px}
+.tag{font-family:var(--f-mono);font-size:.7rem;padding:1px 7px;border-radius:999px;margin-right:4px}
+.tag.ok{background:var(--ok-bg);color:var(--ok)}.tag.bd{background:var(--bad-bg);color:var(--bad)}
+.res{font-size:.82rem;margin:8px 0 0;padding:7px 10px;border-radius:6px;background:var(--accent-soft);color:var(--fg)}.res b{color:var(--accent)}.res.new{background:transparent;border:1px dashed var(--line);color:var(--muted)}
+.study{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:10px;padding:16px 18px;min-width:0}
+.study h3{font-family:var(--f-display);margin:0 0 4px;font-size:1.2rem}.study h4{margin:16px 0 6px;font-size:1rem}
+.study p,.study li{font-size:.92rem;line-height:1.5}.study ul{margin:6px 0;padding-left:20px}
+.tw{overflow-x:auto;margin:8px 0}.study table{border-collapse:collapse;font-size:.82rem;min-width:640px;width:100%}
+.study th,.study td{border-bottom:1px solid var(--line);padding:5px 8px;text-align:right;white-space:nowrap}.study th:first-child,.study td:first-child{text-align:left}
+.study thead th{color:var(--muted);font-weight:600}.study tr.best td{background:var(--ok-bg)}.study tr.base td{color:var(--muted)}.study tr.zone td{font-weight:600;border-top:2px solid var(--line);background:var(--accent-soft)}
+.study .up{color:var(--ok)}.study .dn{color:var(--bad)}.study .note{color:var(--muted);font-size:.82rem}
+.val{font-family:var(--f-mono);font-size:.8rem;color:var(--ann);margin-top:2px}
+svg.ch{width:100%;height:auto;display:block}
+.ch .lbl{font-family:var(--f-mono);font-size:10.5px;fill:var(--fg)}
+.ch text.lbl{stroke:none}.ch text.aI{fill:var(--ok)}.ch text.aR{fill:var(--bad)}
+.ch .mut{fill:var(--muted)}.ch .tI{fill:var(--ok)}.ch .tR{fill:var(--bad)}.ch text.ann{fill:var(--ann)}.ch .eAt{fill:var(--ema-a)}
+.ch .mk{font-family:var(--f-mono);font-size:11px;font-weight:500;fill:var(--fg)}
+.ch .tn{fill:var(--bg);font-weight:500}
+.ch .shI{fill:var(--shI)}.ch .shR{fill:var(--shR)}.ch .hl{fill:var(--hl)}
+.ch .cu{fill:var(--cu)}.ch .cd{fill:var(--cd)}.ch .wu{stroke:var(--cu);stroke-width:1}.ch .wd{stroke:var(--cd);stroke-width:1}
+.ch .ccu{fill:none;stroke:var(--cu);stroke-width:1.4;stroke-dasharray:3 2}.ch .ccd{fill:none;stroke:var(--cd);stroke-width:1.4;stroke-dasharray:3 2}.ch .wcur{stroke:var(--muted);stroke-dasharray:2 2}
+.ch .eA{fill:none;stroke:var(--ema-a);stroke-width:2}.ch .eF{fill:none;stroke:var(--ema-f);stroke-width:1.2}.ch .eS{fill:none;stroke:var(--ema-s);stroke-width:1.2;stroke-dasharray:5 3}
+.ch .ent{fill:var(--ann);stroke:var(--surface);stroke-width:1.5}
+.ch .aI{stroke:var(--ok);stroke-width:1.6;fill:none}.ch .aR{stroke:var(--bad);stroke-width:1.6;fill:none}.ch .w3{stroke-width:3.2}
+.ch line.ann{stroke:var(--ann);stroke-width:1.5}.ch .thin{stroke:var(--muted);stroke-width:1;stroke-dasharray:3 3}
+.ch .sep{stroke:var(--muted);stroke-width:1;stroke-dasharray:2 3}
+.ch .fib{stroke:var(--muted);stroke-width:1;stroke-dasharray:4 3}.ch .fibB{stroke:var(--bad);stroke-width:1;stroke-dasharray:4 3}
+.ch .box{fill:none;stroke:var(--ann);stroke-width:1.6}.ch .dot{fill:var(--ann)}.ch .tch{fill:var(--ann)}
+.ch .oscbg{fill:none}.ch .zero{stroke:var(--line)}.ch .hb{fill:var(--ema-s);opacity:.6}.ch .hbI{fill:var(--ok);opacity:.75}.ch .hbR{fill:var(--bad);opacity:.75}
+.ch .vb{fill:var(--ema-s);opacity:.55}.ch .vbh{fill:var(--ann)}
+</style><main class="wrap">
+<header>
+<div class="eyebrow">Второе мнение · фильтры отката · дополнено 2026-10-10</div>
+<h1>Как работает каждая книжная метрика</h1>
+<p>21 метрика со страницы «Метрики отката к EMA» и 7 новых (A6–A8, C6, V1, V2 и пересчитанный A1) показаны на синтетических свечах. Для каждой два графика: картинка, где метрика говорит «вход нормальный», и картинка, где она говорит «вход плохой». Число под графиком посчитано по нарисованным свечам той же формулой.</p>
+</header>
+<div class="lead">
+<p><b>Это не наши данные.</b> Свечи сгенерированы случайным блужданием с заданным трендом и шумом, поэтому ведут себя как настоящая цена, но описывают только принцип. Масштаб схематичный: бар условно 15 минут, а средние укорочены, чтобы весь эпизод поместился на картинку.</p>
+<p><b>Что изменилось 10 октября.</b> Все метрики группы A теперь считаются только на базовом 5m: старшие таймфреймы заменены масштабом периодов (×3, ×12, ×48), честный тест показал, что это не хуже. Под A1–A6 добавлена строка «проверка» с результатом на поверхности BTC EMA500 (5m, эпизод с окном 48, SL 5–7 × TP 4,5–8). Новые метрики из книг пока не проверялись.</p>
+<p>На всех графиках лонг, шорт зеркально. Зелёная заливка — импульс (от минимума S до максимума P), красная — откат (от P до касания якорной EMA, точка входа).</p>
+</div>
+<div class="legend"><span><i style="border-color:var(--ema-a)"></i>якорная EMA (EMA1000)</span><span><i style="border-color:var(--ema-f)"></i>быстрая (EMA500)</span><span><i style="border-color:var(--ema-s);border-top-style:dashed"></i>медленная (EMA2000)</span><span><i style="border-color:var(--ann)"></i>то, что меряет метрика</span></div>
+<section class="grp"><h2><span class="gl">A</span> Интенсивность отката против импульса</h2><p>Сравниваем, сколько «силы» вложено в рост и сколько в откат. Здоровый откат вялее, медленнее и короче роста.</p></section><article class="card" data-m="A1"><header><span class="id">A1</span><h3>Сила отката к якорю против силы импульса</h3><span class="chip">ниже ~0,9 — хуже</span></header>
+<p class="f">столбик = изменение (EMA5 − EMA якоря) за бар, со знаком; A1 = −Σ столбиков отката ÷ баров отката  ÷  Σ столбиков импульса ÷ баров импульса, по последним 75 барам каждой ноги</p><p>Столбик показывает, на сколько за один бар цена (EMA5) отошла от якоря или приблизилась к нему. Считаются все бары обоих цветов, со знаком, поэтому сумма по ноге — это чистое смещение относительно якоря. A1 сравнивает, с какой скоростью на бар откат возвращает цену к якорю и с какой скоростью импульс от него уводил. Маленький A1 — откат вялый, цена ползёт к якорю без продавца (для лонга); такие входы и блокируются. Откаты в разы резче импульса почти не встречаются: вход — касание якоря, и откат не может уйти к якорю сильно дальше, чем импульс от него ушёл.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Откат идёт к якорю не медленнее, чем шёл импульс</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Откат вялый: цена долго сползает к якорю, скорость втрое ниже импульса</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: идея владельца; у Граймса «откат менее агрессивен, чем нога» (проверка показала обратное для отката к якорю)</p><p class="res"><b>Проверка.</b> BTC, SL 7, ширина 7–9, TP 5,5–8, отрез снизу 0,9: медиана net 37,1 тыс. против 16,9 без фильтра, винрейт 22,1% против 17,0%, сделок 152 против 268. ETH, отрез 1,2: 26,0 тыс. против 9,6, винрейт 19,8% против 16,0%. Подробности — в разделе ниже.</p></article><section class="study" id="a1w">
+<h3>A1 — итог: Δ со знаком на последних 75 барах</h3>
+<p class="note">10–11 октября 2026 · EMA500, fixed SL × TP, комиссия 0,04% на сторону, $10k · эпизод Engine b00376f, окно 48 · сравнение ячейка к ячейке на одних и тех же ячейках, у каждого варианта одна настройка на все ячейки</p>
+<h4>Что выбрано</h4>
+<ul><li><b>Столбик</b> — изменение (EMA5 − EMA500) за один 5m-бар; для шорта знак зеркальный. EMA5 вместо close гасит шум одной свечи на краях окна (проверено: с close хуже на обеих монетах).</li>
+<li><b>Ноги</b> — импульс S*…P и откат P…вход по текущему касанию эпизода; из каждой ноги берутся последние 75 баров (если нога короче — вся нога).</li>
+<li><b>Оба цвета, со знаком</b>: сумма столбиков = чистое смещение относительно якоря. A1 = (−Σ отката ÷ баров) ÷ (Σ импульса ÷ баров); пусто, если импульс в окне не ушёл от якоря.</li>
+<li><b>Фильтр</b> — полоса: блок, если A1 ≤ нижней границы (вялый откат) или ≥ верхней. Верхняя почти ничего не режет: откатов в 10 раз резче импульса единицы.</li></ul>
+<h4>BTC · SL 7, ширина 7–9, lookback 20–300, TP 5,5 / 7 / 7,5 / 8 (348 ячеек)</h4>
+<div class="tw"><table><thead><tr><th>вариант</th><th>отрез</th><th>net медиана / макс</th><th>винрейт</th><th>R</th><th>сделок</th><th>R на сделку</th></tr></thead><tbody><tr class="base"><td>без фильтра</td><td>—</td><td>16,9 / 31,5 тыс.</td><td>17,0%</td><td>81</td><td>268</td><td>0,30</td></tr><tr class="best"><td>Δ со знаком, last 75</td><td>≤ 0,9 (сверху ≥ 10)</td><td>37,1 / 69,3 тыс.</td><td>22,1%</td><td>107</td><td>152</td><td>0,71</td></tr><tr class=""><td>MACD 48-78-48, вся нога (старый эталон)</td><td>0,44 / 3,5</td><td>23,7 / 53,9 тыс.</td><td>18,8%</td><td>106</td><td>243</td><td>0,44</td></tr></tbody></table></div>
+<p class="note">Δ со знаком лучше старого эталона по net в 340 ячейках из 348, по винрейту во всех 348, по R в 202. Все ячейки в плюсе и до, и после 2023-07. Пики до 69 тыс.</p>
+<h4>ETH · SL 7–9, ширина 7–9, TP 5,5–8 (1566 ячеек)</h4>
+<div class="tw"><table><thead><tr><th>вариант</th><th>отрез</th><th>net медиана / макс</th><th>винрейт</th><th>R</th><th>сделок</th><th>R на сделку</th></tr></thead><tbody><tr class="base"><td>без фильтра</td><td>—</td><td>9,6 / 36,2 тыс.</td><td>16,0%</td><td>43</td><td>223</td><td>0,19</td></tr><tr class="best"><td>Δ со знаком, last 75</td><td>≤ 1,2</td><td>26,0 / 81,6 тыс.</td><td>19,8%</td><td>62</td><td>128</td><td>0,49</td></tr><tr class=""><td>MACD 48-78-48, вся нога (старый эталон)</td><td>0,32 / —</td><td>14,5 / 43,0 тыс.</td><td>16,9%</td><td>55</td><td>212</td><td>0,26</td></tr></tbody></table></div>
+<p class="note">Лучше старого эталона по net в 1539 ячейках, по винрейту во всех 1566, по R в 1239. Отрез 1,2 — край проверенной сетки.</p>
+<h4>Осторожно: обрыв рядом с оптимумом</h4>
+<p>На BTC медиана net падает с 34,3 тыс. на отрезе 1,0 до 19,5 тыс. на 1,1; на ETH — с 25,3 тыс. на 1,3 до 14,2 тыс. на 1,4. Для торговли отрез брать с запасом от обрыва: BTC 0,8–0,9, ETH 1,1–1,2. Сделок с фильтром на ~40% меньше, чем без него (BTC 152 против 268).</p>
+<h4>Что проверили и отбросили</h4>
+<ul><li><b>MACD 48-78-48</b> (вся нога, последние 48 / 75 баров, верхняя половина и четверть столбиков): периоды с потолка и запаздывание — первые 15–25 баров отката MACD ещё показывает импульс; лучшие настройки разные на каждом TP.</li>
+<li><b>Δ только «по тренду» на импульсе и «против» на откате</b> (односторонний, и A6 — сумма): самый высокий винрейт (25–30%), но сделок втрое меньше.</li>
+<li><b>MACD(1, 500) с сигнальной 48 и 6</b>: по деньгам почти как Δ со знаком, но ниже R и винрейт (сигнальная 48) или втрое меньше сделок (сигнальная 6); чем короче сигнальная, тем ближе к Δ.</li>
+<li><b>Длина отката сама по себе</b> (блок коротких откатов) — вредит; <b>отрезы по квантилям</b> — заменены фиксированной сеткой; <b>связка «ИЛИ» Δ и MACD(1,500,6)</b> — ничего не добавляет, корреляция 0,86.</li>
+<li><b>Чистота ног</b> (смещение ÷ путь): разность «откат чище импульса» работает одной настройкой на обеих монетах (92–94% ячеек лучше эталона) — отложена как кандидат для будущего фильтра с голосованием.</li></ul>
+<p class="note">Задача для Engine: полосовой фильтр A1 на этих столбиках (окно N = 75 по умолчанию, обе границы можно выключить), передана 11 октября. Скрипты: treatise/a1_final_compare.py, a1s_l75_surface.py, a1s_ema1.py, purity_scan.py, or_combo.py.</p>
+</section><!--/a1w--><article class="card" data-m="A2"><header><span class="id">A2</span><h3>Крутизна столбиков</h3><span class="chip">больше 1 — хуже</span></header>
+<p class="f">max |изменение столбика за 3 бара| на откате ÷ то же на импульсе</p><p>Мерим не сколько, а как резко. Если столбики на откате падают круче, чем росли на импульсе, значит в рынок вошёл агрессивный продавец, а не просто фиксация прибыли.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Столбики уходят вниз плавно</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Резкий провал в конце отката: крутизна вдвое выше, чем на росте</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Идея владельца</p><p class="res"><b>Проверка BTC.</b> MACD 24-48-48 на 5m (масштаб ×3), шаг 12 баров, вся нога, max. Срез ≤ 0,65 и ≥ 1,8: net +6,9 тыс., после 2023-07 +1,3 тыс., DD −23%, все годы в плюсе у 9,4% точек, 700 «интересных» точек. Лучший блокер BTC. На ETH работает другой край: блок резких откатов (≥ 1,27 на обычном 5m).</p></article><article class="card" data-m="A3"><header><span class="id">A3</span><h3>Скорость отката против скорости роста</h3><span class="chip">крайний верх — хуже</span></header>
+<p class="f">(D ÷ nR) ÷ (H ÷ nI)</p><p>Наклон двух хорд: от минимума до P и от P до входа. Если цена падает к EMA в разы быстрее, чем росла, это уже не откат, а встречный импульс.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Откат пологий: скорость в 4 раза ниже роста</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Обвал к EMA за несколько баров: скорость почти в 5 раз выше роста</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Граймс; у треда метка C (5m, хвост 5%)</p><p class="res"><b>Проверка BTC.</b> Вся нога, глубина по close. Слабый: лучший срез — до 48 «интересных» точек, net около базы.</p></article><article class="card" data-m="A4"><header><span class="id">A4</span><h3>Длительность отката против роста</h3><span class="chip">3 и больше — хуже</span></header>
+<p class="f">nR ÷ nI (в барах)</p><p>Время тоже сила. Откат, который длится втрое дольше роста, говорит, что покупатели не возвращаются, а EMA просто догоняет стоящую цену.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Откат длится столько же, сколько рост</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Рост за 7 баров, потом почти 90 баров сползания</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Граймс; у треда метка X1 (4h)</p><p class="res"><b>Проверка BTC.</b> Бары отката ÷ бары импульса на 5m. С окном эпизода 48 почти ничего не даёт. С окном 24 блок самых длинных откатов делал поверхность ровнее на обеих монетах, но денег почти не добавлял.</p></article><article class="card" data-m="A5"><header><span class="id">A5</span><h3>Прямота движения (Кауфман)</h3><span class="chip">больше 0 — хуже</span></header>
+<p class="f">ER = |Δclose| ÷ Σ|Δclose|; ER(отката) − ER(импульса)</p><p>ER = 1, если цена шла по линейке, и близко к 0, если болталась. Здоровая картина: рост прямой, откат рваный. Опасно, когда откат идёт прямее роста.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Рост прямой, откат пилой</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Рост рваный, откат одной линией</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Кауфман, адаптивная средняя</p><p class="res"><b>Проверка BTC.</b> По всей ноге, каждая нога разбита на 8 частей: после 2023-07 +2,1 тыс., все годы в плюсе у 7,4% точек, 458 «интересных» точек, пустых значений почти нет. Вариант «последние 96 баров, шаг 24»: net +6,8 тыс., но после 2023-07 только +0,2 тыс. и пусто у 41% входов.</p></article><article class="card" data-m="A6"><header><span class="id">A6</span><h3>Площадь столбиков осциллятора</h3><span class="chip">больше 1 — хуже</span></header>
+<p class="f">Σ|столбиков ниже нуля| на откате ÷ Σ столбиков выше нуля на импульсе</p><p>Площадь — это сила, умноженная на длительность: сколько «энергии» вложено в откат против энергии роста. Долгий вялый откат набирает большую площадь мелкими столбиками, короткий резкий — маленькую. При ровном движении площадь близка к D ÷ H, поэтому A6 во многом повторяет C3.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Короткий откат: площадь в несколько раз меньше роста</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Рост короткий, откат долгий: площадь отката больше роста</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Идея владельца (как A1 в первой версии альманаха)</p><p class="res"><b>Проверка BTC.</b> MACD 48-78-48 на 5m. Вся нога: срез ≤ 0,05 и ≥ 1,1 — net +3,9 тыс., после 2023-07 +1,2 тыс. Верхняя половина столбиков: срез ≥ 0,97 — net +4,0 тыс., после 2023-07 +1,5 тыс. Ровных точек меньше, чем у A1 по последним 48 барам.</p></article><article class="card" data-m="A7"><header><span class="id">A7</span><h3>Глубина провала моментума</h3><span class="chip">меньше — лучше</span></header>
+<p class="f">(пик быстрой линии на импульсе − минимум быстрой на откате) ÷ (пик быстрой − медленная в момент пика)</p><p>Осциллятор Рашке 3-10-16: быстрая линия = SMA3 − SMA10, медленная = SMA16 от быстрой. «Неохотный откат»: быстрая линия лишь неглубоко отходит к медленной, а медленная продолжает расти. Значение около 1 — быстрая дошла до медленной; много больше 1 — провалилась глубоко под неё. Экстремумы, а не суммы.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Вялый откат: быстрая линия едва ушла под медленную</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Резкий провал: быстрая линия ушла далеко под медленную</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Рашке, сетап «Anti»; Граймс (MACD 3-10)</p><p class="res new">Ещё не проверено. На 5m — с масштабом периодов ×1…×48, как A1/A2.</p></article><article class="card" data-m="A8"><header><span class="id">A8</span><h3>Минимум RSI на откате</h3><span class="chip">ниже 40 — хуже</span></header>
+<p class="f">min RSI на откате (для шорта max); на картинке RSI 28 = 14 × 2</p><p>В бычьем режиме RSI на откатах держится в зоне 40–50; если откат продавил RSI ниже 40, это ранний признак смены режима. Порог задаётся прямо в единицах RSI, без отношений. RSI медленного масштаба реагирует на длительность отката: долгое сползание опускает его сильнее, чем короткий прокол.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Короткий откат: RSI остался около 45</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Долгое сползание: RSI ушёл ниже 40</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Кардуэлл, Констанс Браун (RSI range rules)</p><p class="res new">Ещё не проверено. На 5m — RSI 14 × масштаб.</p></article><section class="grp"><h2><span class="gl">B</span> Сила растущей полуволны</h2><p>Чем сильнее был импульс перед откатом, тем вероятнее его продолжение. По нашим данным это единственная группа с подтверждённым сигналом.</p></section><article class="card" data-m="B1"><header><span class="id">B1</span><h3>Самая крупная свеча импульса</h3><span class="chip">больше — лучше</span></header>
+<p class="f">max(close − open) на импульсе ÷ ATR</p><p>Одна большая трендовая свеча — след крупного покупателя. Импульс из мелких свечей одинакового размера бывает и у шумового дрейфа.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> В импульсе есть свеча в 3,6 ATR</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Все свечи мелкие, крупнейшая около 1 ATR</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Брукс; у нас единственный признак из 944, переживший поправку (4h)</p></article><article class="card" data-m="B2"><header><span class="id">B2</span><h3>Новый максимум моментума</h3><span class="chip">да — лучше</span></header>
+<p class="f">пик осциллятора на последней волне ÷ пик на прошлой волне</p><p>Если цена ставит новый максимум, а моментум нет — это дивергенция, покупатель выдыхается. Граймс берёт откат только после импульса, где моментум обновил максимум.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Вторая волна сильнее первой, моментум выше</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Цена чуть выше, а моментум вдвое ниже: дивергенция</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Граймс (MACD 3-10); у нас сравнение волн дало обратный знак, мерить «за окно»</p></article><article class="card" data-m="B3"><header><span class="id">B3</span><h3>Размер импульса в ATR</h3><span class="chip">больше — лучше</span></header>
+<p class="f">H ÷ ATR; H ÷ (nI · ATR)</p><p>Насколько далеко ушёл рост, в единицах обычного шума. Большой ход означает, что тренд реальный, и запас до возврата к EMA больше.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Рост почти 20 ATR</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Рост около 8 ATR</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Выше у выигравших в скане треда</p></article><article class="card" data-m="B4"><header><span class="id">B4</span><h3>Микроканал</h3><span class="chip">длиннее — лучше</span></header>
+<p class="f">самая длинная серия баров, у которых low выше low предыдущего</p><p>Когда много баров подряд никто не может продавить цену ниже прошлого бара, покупатель очень настойчив. Брукс считает такие серии признаком сильного тренда.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> 23 бара подряд с растущими минимумами</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Максимум 4 бара подряд, рост рваный</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Брукс, микроканал</p></article><article class="card" data-m="B5"><header><span class="id">B5</span><h3>Номер касания после сборки стека</h3><span class="chip">первое — лучше</span></header>
+<p class="f">сколько раз цена касалась якорной EMA после сборки стека</p><p>Первый откат после того, как средние выстроились, обычно лучший: тренд молодой. Каждое следующее касание — тренд старше и ближе к концу.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Первое касание</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Четвёртое касание</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Классика трендовой торговли; у треда на 4h выше у выигравших</p></article><section class="grp"><h2><span class="gl">C</span> Сам откат: глубина, длительность, структура</h2><p>Откат сравниваем с импульсом и с прошлыми откатами этого же тренда. Прошлые сканы эту группу почти исчерпали.</p></section><article class="card" data-m="C1"><header><span class="id">C1</span><h3>Откат против прошлых откатов</h3><span class="chip">2 и больше — хуже</span></header>
+<p class="f">D ÷ самый глубокий прошлый откат внутри тренда</p><p>У тренда свой ритм откатов. Если текущий откат вдвое глубже любого прошлого, ритм сломан: по Бруксу так часто выглядит последний откат тренда.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Откат как прошлые</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Откат почти втрое глубже прошлых</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Брукс</p></article><article class="card" data-m="C2"><header><span class="id">C2</span><h3>Слом структуры</h3><span class="chip">пробит — хуже</span></header>
+<p class="f">low отката ниже последнего swing low импульса</p><p>Растущий тренд — это лесенка из повышающихся минимумов. Если откат пробил последнюю ступеньку, лесенка сломана, даже если цена ещё у EMA.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Последний swing low удержан</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Откат пробил swing low</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Структура рынка (Dow, price action)</p></article><article class="card" data-m="C3"><header><span class="id">C3</span><h3>Глубина в долях импульса</h3><span class="chip">больше 0,786 — хуже</span></header>
+<p class="f">D ÷ H; уровни 0,5 / 0,618 / 0,786 / 1</p><p>Какую часть роста забрал откат. До 0,5–0,618 считается здоровым, от 0,786 и до 1 — опасным, больше 1 — слом. Эмпирики под этими числами я не нашёл.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Откат забрал 44% роста</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Откат забрал 81% роста</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Фибоначчи у практиков; Граймс «откат не больше импульса»</p></article><article class="card" data-m="C4"><header><span class="id">C4</span><h3>Длительность в часах</h3><span class="chip">больше 20 — хуже</span></header>
+<p class="f">nR в 1h-свечах (здесь 1 бар = 15 мин)</p><p>Долгий откат значит, что рынок перестал верить в тренд. Брукс: откат дольше примерно 20 баров — уже 50 на 50, это скорее боковик, чем пауза.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Откат 6 часов</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Откат 25 часов</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Брукс; родственно X1 треда</p></article><article class="card" data-m="C5"><header><span class="id">C5</span><h3>Кто закрыл зазор: цена или EMA</h3><span class="chip">около 1 — хуже</span></header>
+<p class="f">(EMA в момент входа − EMA в P) ÷ (P − EMA в P)</p><p>Зазор между ценой и EMA закрывается двумя способами: цена падает к EMA или EMA растёт к цене. Если зазор закрыла в основном EMA, цена долго стояла — тренд выдохся, хотя глубина маленькая.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Зазор закрыла цена, EMA почти на месте</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> EMA догнала 63% зазора: цена долго стояла на месте</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Наше обсуждение</p></article><article class="card" data-m="C6"><header><span class="id">C6</span><h3>Скрытая дивергенция против прошлого отката</h3><span class="chip">цена выше, RSI ниже — лучше</span></header>
+<p class="f">low(текущего отката) − low(прошлого отката) в ATR; min RSI(текущего) − min RSI(прошлого)</p><p>Сравниваем текущий откат с прошлым откатом того же тренда. Если цена остановилась выше прошлого минимума, а RSI опустился ниже прошлого минимума RSI, продавцы надавили, но не смогли продавить цену — это «положительный разворот», признак продолжения. Если цена пробила прошлый минимум, а RSI тоже ниже — откат просто сильнее прошлого.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Цена выше прошлого минимума, RSI ниже: положительный разворот</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Цена пробила прошлый минимум, RSI тоже ниже</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Кардуэлл (positive reversal); Граймс (дивергенция моментума на откате)</p><p class="res new">Ещё не проверено. Для первой волны эпизода значения нет.</p></article><section class="grp"><h2><span class="gl">V</span> Объём на ногах волны</h2><p>Та же пара ног, импульс и откат, но меряем объём. В базе есть объём 5m-свечей, а в прошлых проверках он не использовался. На графике под ценой — объём: зелёный на импульсе, красный на откате.</p></section><article class="card" data-m="V1"><header><span class="id">V1</span><h3>Объём отката против объёма импульса</h3><span class="chip">больше 1 — хуже</span></header>
+<p class="f">средний объём на баре отката ÷ средний объём на баре импульса</p><p>Здоровый откат идёт без продавцов: объём на нём ниже, чем на росте, бары узкие. Если на откате объём выше, чем на импульсе, это распределение, а не пауза.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Объём на откате вдвое ниже, чем на росте</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Объём на откате выше, чем на росте</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Вайкофф и VSA (no supply), Минервини (объём высыхает), O'Neil; Lee & Swaminathan — объём и моментум</p><p class="res new">Ещё не проверено.</p></article><article class="card" data-m="V2"><header><span class="id">V2</span><h3>Сила отката по Элдеру</h3><span class="chip">больше 1 — хуже</span></header>
+<p class="f">|Σ(Δclose × объём) на откате| ÷ Σ(Δclose × объём) на импульсе</p><p>Force Index Элдера: движение цены, умноженное на объём. Соединяет «как далеко» и «сколько денег»: откат может быть глубоким, но на пустом объёме, и наоборот.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Откат на малом объёме: сила впятеро ниже роста</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Резкий откат на большом объёме: сильнее роста</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Элдер, Force Index (Trading for a Living)</p><p class="res new">Ещё не проверено.</p></article><section class="grp"><h2><span class="gl">D</span> Свеча старшего ТФ и её почерк</h2><p>Дневная свеча в момент входа: закрытые и текущая незакрытая (контур). Ниже объём. Числа считаются по ATR дневок.</p></section><article class="card" data-m="D1"><header><span class="id">D1</span><h3>Направление текущей свечи</h3><span class="chip">против нас — хуже</span></header>
+<p class="f">(close сейчас − open свечи) ÷ ATR дневок</p><p>Торгуем лонг, а сегодняшняя свеча уже глубоко красная — мы покупаем против дневного потока. Элдер: входить только по направлению старшего ТФ.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Текущая свеча зелёная</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Текущая свеча −1,8 ATR против нас</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Элдер, Triple Screen; Quantpedia на BTC</p></article><article class="card" data-m="D2"><header><span class="id">D2</span><h3>Место цены в диапазоне свечи</h3><span class="chip">у лонга нижняя треть — хуже</span></header>
+<p class="f">(close − low) ÷ (high − low) текущей свечи</p><p>Где цена внутри сегодняшнего диапазона. У лонга цена в нижней трети значит, что продавцы днём выиграли бой, даже если свеча ещё не красная.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Цена у верха диапазона</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Цена в нижней трети после сброса с хая</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Price action, закрытие в диапазоне</p></article><article class="card" data-m="D3"><header><span class="id">D3</span><h3>Аномальный фитиль против</h3><span class="chip">да — хуже</span></header>
+<p class="f">верхний фитиль ÷ диапазон ≥ 0,6 и диапазон ≥ 1,5 ATR</p><p>Длинный верхний фитиль — цену подняли и её сбросили обратно. На большой свече это след отказа продолжать рост.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Обычная свеча, фитиль маленький</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Фитиль 80% диапазона на свече в 2 ATR</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Брукс, Булковски; без объёма слабый</p></article><article class="card" data-m="D4"><header><span class="id">D4</span><h3>Аномальное тело против</h3><span class="chip">да — хуже</span></header>
+<p class="f">тело против ÷ ATR ≥ 1,5 (или z тела ≥ 2)</p><p>Одна огромная красная дневка посреди роста — крупный продавец заявил о себе. Откат после неё может оказаться началом разворота.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Обычная зелёная дневка</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Красное тело 2 ATR</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Price action</p></article><article class="card" data-m="D5"><header><span class="id">D5</span><h3>Объём на разворотной свече</h3><span class="chip">да — хуже</span></header>
+<p class="f">z объёма за 20 свечей ≥ 2 И (D3 или D4)</p><p>Фитиль на обычном объёме — шум. Тот же фитиль на огромном объёме — кульминация: покупатели выкупили всё, что могли, и их перебили. Объём превращает слабый D3/D4 в сильный сигнал.</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Тот же фитиль, объём обычный</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Тот же фитиль, объём z ≈ 3</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Вайкофф, кульминация покупок</p></article><article class="card" data-m="D6"><header><span class="id">D6</span><h3>Усилие против результата</h3><span class="chip">высокое — хуже</span></header>
+<p class="f">(объём ÷ средний) ÷ (|тело| ÷ ATR)</p><p>Большой объём должен двигать цену. Если объём огромный, а свеча почти не сдвинулась, кто-то поглощал все покупки. Вайкофф называет это «усилие без результата».</p>
+<div class="pair"><figure class="good"><figcaption><span class="tag ok">хорошо</span> Объём большой и свеча большая: усилие дало результат</figcaption><div class="pic"></div><div class="val"></div></figure>
+<figure class="bad"><figcaption><span class="tag bd">плохо</span> Объём вдвое выше среднего, а тело почти ноль</figcaption><div class="pic"></div><div class="val"></div></figure></div>
+<p class="src">Источник: Вайкофф</p></article>
+</main>
+<script>
+// Synthetic price engine: bars are "15m-like" candles, price in ATR units (ATR ≈ 1).
+const EF = 40, EA = 90, ES = 180; // fast ("EMA500"), anchor ("EMA1000"), slow ("EMA2000") in this schematic scale
+function rng(seed){let a=seed>>>0;return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+function gauss(r){let u=0,v=0;while(!u)u=r();while(!v)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v)}
+function ema(xs,n){const k=2/(n+1);const o=[];let e=xs[0];for(const x of xs){e=e+k*(x-e);o.push(e)}return o}
+
+// segment: {n, d, v, wk, touch}  d = price change over the segment; touch:true -> d is fitted so the segment ends on the anchor EMA
+function buildCloses(segs,seed,p0){
+  const cl=[p0];
+  segs.forEach((s,si)=>{
+    const r=rng(seed*7919+si*104729+13);
+    const a=cl[cl.length-1],n=s.n,steps=[];let w=0;
+    for(let i=1;i<=n;i++){w+=gauss(r)*s.v;steps.push(w)}
+    const wn=steps[n-1];
+    for(let i=1;i<=n;i++){cl.push(a+s.d*(i/n)+(s.shape?s.shape(i/n)*s.d-(s.d*(i/n)):0)+steps[i-1]-(i/n)*wn)}
+  });
+  return cl;
+}
+function generate(spec){
+  const segs=spec.segs.map(s=>Object.assign({},s));
+  const p0=spec.p0||100;
+  for(let si=0;si<segs.length;si++){
+    if(!segs[si].touch)continue;
+    const off=segs[si].off??0.25;
+    for(let it=0;it<12;it++){
+      const cl=buildCloses(segs.slice(0,si+1),spec.seed,p0);
+      const ea=ema(cl,EA);const end=cl.length-1;
+      const err=(ea[end]+off)-cl[end];
+      segs[si].d+=err;
+      if(Math.abs(err)<1e-3)break;
+    }
+  }
+  const cl=buildCloses(segs,spec.seed,p0);
+  const r=rng(spec.seed*31+7);
+  const bars=[];
+  for(let i=1;i<cl.length;i++){
+    const o=cl[i-1],c=cl[i];
+    let segIdx=0,acc=0;for(;segIdx<segs.length;segIdx++){acc+=segs[segIdx].n;if(i<=acc)break}
+    const wk=(segs[Math.min(segIdx,segs.length-1)].wk??0.22);
+    const h=Math.max(o,c)+Math.abs(gauss(r))*wk,l=Math.min(o,c)-Math.abs(gauss(r))*wk;
+    bars.push({o,h,l,c});
+  }
+  const closes=bars.map(b=>b.c);
+  const eF=ema(closes,EF),eA=ema(closes,EA),eS=ema(closes,ES);
+  // force entry bar's low to tag the anchor
+  const E=bars.length-1;bars[E].l=Math.min(bars[E].l,eA[E]-0.06);
+  // segment boundaries
+  const bounds=[];let k=0;for(const s of segs){bounds.push(k);k+=s.n}bounds.push(k);
+  const S=bounds[spec.legSeg]; // leg starts at the start of legSeg (bar index = boundary)
+  let P=S;for(let i=S;i<E;i++)if(bars[i].h>bars[P].h)P=i;
+  const eO=ema(closes,20);const hist=closes.map((x,i)=>x-eO[i]);
+  const legEnd=bounds[spec.legEndSeg??segs.length-1];return {bars,closes,eF,eA,eS,eO,S,P,E,hist,bounds,legEnd,view:spec.view??Math.max(0,S-30)};
+}
+// metrics helpers
+function er(cl,a,b){let s=0;for(let i=a+1;i<=b;i++)s+=Math.abs(cl[i]-cl[i-1]);return s?Math.abs(cl[b]-cl[a])/s:0}
+function legLow(g){let lo=Infinity;for(let i=g.S;i<=g.P;i++)lo=Math.min(lo,g.bars[i].l);return lo}
+function H(g){return g.bars[g.P].h-legLow(g)}
+function D(g){return g.bars[g.P].h-g.bars[g.E].l}
+function nI(g){let li=g.S,lo=Infinity;for(let i=g.S;i<=g.P;i++)if(g.bars[i].l<lo){lo=g.bars[i].l;li=i}return Math.max(1,g.P-li)}
+function legStart(g){let li=g.S,lo=Infinity;for(let i=g.S;i<=g.P;i++)if(g.bars[i].l<lo){lo=g.bars[i].l;li=i}return li}
+function nR(g){return g.E-g.P}
+
+
+// Scenario specs and metric calculators for groups A–C (5m-like charts) and D (daily candles)
+const PRE=[{n:200,d:22,v:0.45},{n:36,d:-4,v:0.4,touch:true}];
+function mk(seed,leg,pb,pre){const p=pre||PRE;const segs=[...p,...leg,...pb];return {seed,segs,legSeg:p.length,legEndSeg:p.length+leg.length}}
+const TOUCH=(n,v,extra)=>Object.assign({n,d:-5,v,touch:true},extra||{});
+function atr(g,a,b){let s=0,k=0;for(let i=Math.max(1,a);i<=b;i++){const B=g.bars[i],pc=g.bars[i-1].c;s+=Math.max(B.h-B.l,Math.abs(B.h-pc),Math.abs(B.l-pc));k++}return s/k}
+function A(g){return atr(g,g.view,g.E)}
+function histArea(g){let pos=0,neg=0;for(let i=g.S;i<=g.P;i++)pos+=Math.max(0,g.hist[i]);for(let i=g.P+1;i<=g.E;i++)neg+=Math.max(0,-g.hist[i]);return neg/Math.max(pos,1e-9)}
+function histSlope(g){const k=3;let mi=0,mr=0;for(let i=g.S+k;i<=g.P;i++)mi=Math.max(mi,Math.abs(g.hist[i]-g.hist[i-k]));for(let i=g.P+k;i<=g.E;i++)mr=Math.max(mr,Math.abs(g.hist[i]-g.hist[i-k]));return mr/Math.max(mi,1e-9)}
+function speed(g){const ls=legStart(g);return (D(g)/nR(g))/(H(g)/Math.max(1,g.P-ls))}
+function durRatio(g){return nR(g)/nI(g)}
+function erDiff(g){const ls=legStart(g);return {erI:er(g.closes,ls,g.P),erR:er(g.closes,g.P,g.E)}}
+function maxBody(g){let m=0,mi=g.S;for(let i=legStart(g);i<=g.P;i++){const b=g.bars[i].c-g.bars[i].o;if(b>m){m=b;mi=i}}return {v:m/A(g),i:mi}}
+function momHigh(g,split){let a=-1e9,b=-1e9;for(let i=g.S;i<split;i++)a=Math.max(a,g.hist[i]);for(let i=split;i<=g.P;i++)b=Math.max(b,g.hist[i]);return {prior:a,cur:b}}
+function microRun(g){let best=0,cur=0,bs=0,be=0,cs=legStart(g);for(let i=legStart(g)+1;i<=g.P;i++){if(g.bars[i].l>g.bars[i-1].l){cur++;if(cur>best){best=cur;bs=cs;be=i}}else{cur=0;cs=i}}return {n:best,a:bs,b:be}}
+function touches(g,from){const t=[];for(let i=Math.max(from,1);i<=g.E;i++){if(g.bars[i].l<=g.eA[i]&&!(g.bars[i-1].l<=g.eA[i-1])){if(!t.length||i-t[t.length-1]>8)t.push(i)}}return t}
+function stackFrom(g){let k=g.E;while(k>0&&g.eF[k]>g.eA[k]&&g.eA[k]>g.eS[k])k--;return k+1}
+function zigDrops(g,a,b,th){// drops from swing highs >= th inside [a,b]
+  const out=[];let hi=g.bars[a].h,hiI=a,lo=hi,loI=a,dir=1;
+  for(let i=a;i<=b;i++){const B=g.bars[i];
+    if(dir===1){if(B.h>hi){hi=B.h;hiI=i;lo=B.l;loI=i}else if(B.l<lo){lo=B.l;loI=i}
+      if(hi-lo>=th&&B.h<hi){/*track*/}
+      if(B.h>hi)continue;
+      if(i>hiI&&g.bars[i].h>lo+th&&hi-lo>=th){out.push({hi,hiI,lo,loI});hi=B.h;hiI=i;lo=B.l;loI=i}
+    }
+  }
+  return out}
+function swingLow(g){// last higher-low pivot (3 bars each side) between legStart and P
+  let best=null;for(let i=legStart(g)+3;i<=g.P-3;i++){const l=g.bars[i].l;let ok=true;for(let j=i-3;j<=i+3;j++)if(j!==i&&g.bars[j].l<l){ok=false;break}if(ok)best=i}return best}
+function gapShare(g){const gap=g.bars[g.P].h-g.eA[g.P];const emaRise=g.eA[g.E]-g.eA[g.P];return {share:emaRise/gap,gap,emaRise,priceDrop:g.bars[g.P].h-g.eA[g.E]}}
+
+const SCEN={
+ A1:{good:mk(11,[{n:40,d:13,v:0.35}],[TOUCH(48,0.32)]),bad:mk(12,[{n:12,d:4,v:0.2}],[TOUCH(40,0.08)])},
+ A2:{good:mk(21,[{n:36,d:11,v:0.35}],[TOUCH(50,0.3)]),bad:mk(22,[{n:36,d:11,v:0.35}],[{n:30,d:-1,v:0.3},TOUCH(4,0.15,{wk:0.4})])},
+ A3:{good:mk(31,[{n:30,d:10,v:0.35}],[TOUCH(55,0.32)]),bad:mk(32,[{n:30,d:10,v:0.35}],[TOUCH(5,0.2,{wk:0.4})])},
+ A4:{good:mk(41,[{n:40,d:11,v:0.35}],[TOUCH(38,0.35)]),bad:mk(42,[{n:7,d:6.5,v:0.15,wk:0.4}],[{n:70,d:-2,v:0.22},TOUCH(20,0.22)])},
+ A5:{good:mk(51,[{n:36,d:11,v:0.18}],[TOUCH(44,0.75)]),bad:mk(52,[{n:36,d:8,v:0.85}],[TOUCH(28,0.12)])},
+ B1:{good:mk(61,[{n:10,d:2,v:0.3},{n:1,d:2.6,v:0,wk:0.3},{n:8,d:1.5,v:0.3},{n:1,d:2.3,v:0,wk:0.3},{n:14,d:3,v:0.3}],[TOUCH(40,0.32)]),bad:mk(62,[{n:44,d:9,v:0.2,wk:0.15}],[TOUCH(40,0.32)])},
+ B2:{good:mk(71,[{n:18,d:7,v:0.3},{n:10,d:-3,v:0.3},{n:12,d:8,v:0.3}],[TOUCH(40,0.32)]),bad:mk(72,[{n:18,d:7,v:0.3},{n:10,d:-3,v:0.3},{n:34,d:4,v:0.18}],[TOUCH(34,0.32)])},
+ B3:{good:mk(81,[{n:28,d:14,v:0.35}],[TOUCH(42,0.32)]),bad:mk(82,[{n:42,d:5,v:0.4}],[TOUCH(30,0.32)])},
+ B4:{good:mk(91,[{n:34,d:10,v:0.12,wk:0.12}],[TOUCH(42,0.35)]),bad:mk(92,[{n:34,d:10,v:0.8}],[TOUCH(42,0.35)])},
+ B5:{good:mk(101,[{n:44,d:11,v:0.35}],[TOUCH(40,0.32)],[{n:150,d:-3,v:0.55},{n:150,d:19,v:0.42},{n:20,d:-3,v:0.4}]),
+     bad:mk(102,[{n:44,d:10,v:0.35}],[TOUCH(40,0.32)],[{n:200,d:22,v:0.45},{n:30,d:-4,v:0.4,touch:true},{n:45,d:10,v:0.35},{n:30,d:-4,v:0.4,touch:true}])},
+ C1:{good:mk(111,[{n:14,d:6,v:0.3},{n:10,d:-3.6,v:0.3},{n:14,d:6,v:0.3},{n:10,d:-3.8,v:0.3},{n:12,d:5,v:0.3}],[TOUCH(16,0.3)]),
+     bad:mk(112,[{n:14,d:5,v:0.25},{n:6,d:-1.2,v:0.2},{n:14,d:5,v:0.25},{n:6,d:-1.3,v:0.2},{n:14,d:5,v:0.25}],[TOUCH(26,0.3)])},
+ C2:{good:mk(121,[{n:20,d:7,v:0.3},{n:12,d:-5.2,v:0.3},{n:16,d:6,v:0.3}],[TOUCH(26,0.3)]),bad:mk(122,[{n:20,d:7,v:0.3},{n:6,d:-1.4,v:0.2},{n:16,d:6,v:0.3}],[TOUCH(26,0.3)])},
+ C3:{good:mk(131,[{n:40,d:17,v:0.3}],[TOUCH(26,0.3)]),bad:mk(132,[{n:24,d:6,v:0.3}],[TOUCH(6,0.2)])},
+ C4:{good:mk(141,[{n:36,d:11,v:0.35}],[TOUCH(26,0.35)]),bad:mk(142,[{n:36,d:11,v:0.35}],[TOUCH(100,0.3)])},
+ C5:{good:mk(151,[{n:36,d:11,v:0.35}],[TOUCH(12,0.35)]),bad:mk(152,[{n:36,d:11,v:0.35}],[{n:60,d:-1,v:0.25},TOUCH(30,0.25)])},
+};
+
+
+// ---------- New metrics (2026-10-10): A1 as mean per bar, A6 area, A7 Raschke dip, A8 RSI floor, C6 hidden divergence, V1/V2 volume on legs ----------
+function sma(xs,n){const o=[];let s=0;for(let i=0;i<xs.length;i++){s+=xs[i];if(i>=n)s-=xs[i-n];o.push(i>=n-1?s/n:NaN)}return o}
+function rsi(xs,n=14){const o=new Array(xs.length).fill(NaN);let up=0,dn=0;for(let i=1;i<xs.length;i++){const d=xs[i]-xs[i-1];const u=Math.max(d,0),w=Math.max(-d,0);if(i<=n){up+=u/n;dn+=w/n;if(i===n)o[i]=100-100/(1+up/Math.max(dn,1e-12))}else{up=(up*(n-1)+u)/n;dn=(dn*(n-1)+w)/n;o[i]=100-100/(1+up/Math.max(dn,1e-12))}}return o}
+const OSCK=1, RSIK=2; // schematic scale: 3-10-16 as is, RSI period 14 x 2 = 28
+function addInd(g,spec){const f=sma(g.closes,3*OSCK),t=sma(g.closes,10*OSCK);g.fast=f.map((v,i)=>v-t[i]);const fz=g.fast.map(v=>isNaN(v)?0:v);g.slow=sma(fz,16*OSCK);g.rsi=rsi(g.closes,14*RSIK);
+  const r=rng(spec.seed*17+3);g.vol=[];let i=0;for(const s of spec.segs){for(let k=0;k<s.n;k++){const b=g.bars[i];if(!b)break;g.vol.push((s.vm??1)*(0.5+0.9*Math.abs(b.c-b.o))*Math.exp(gauss(r)*0.25));i++}}return g}
+function dsig(g){if(g._d)return g._d;const e5=ema(g.closes,5);const d=g.closes.map((_,i)=>i?(e5[i]-g.eA[i])-(e5[i-1]-g.eA[i-1]):NaN);g._d=d;return d}
+function a1win(g){const ls=legStart(g);return {i0:Math.max(ls,g.P-74),r0:Math.max(g.P,g.E-74)}}
+function a1sig(g){const d=dsig(g),w=a1win(g);let si=0,ni=0,sr=0,nr=0;for(let i=w.i0;i<=g.P;i++){si+=d[i];ni++}for(let i=w.r0;i<=g.E;i++){sr+=d[i];nr++}return si>0?(-sr/nr)/(si/ni):NaN}
+function histMean(g){let pos=0,neg=0;const ls=legStart(g);for(let i=ls;i<=g.P;i++)pos+=Math.max(0,g.hist[i]);for(let i=g.P+1;i<=g.E;i++)neg+=Math.max(0,-g.hist[i]);return (neg/Math.max(1,g.E-g.P))/Math.max(pos/Math.max(1,g.P-ls+1),1e-9)}
+function dip310(g){const ls=legStart(g);let pi=ls;for(let i=ls;i<=g.P;i++)if(g.fast[i]>g.fast[pi])pi=i;let mn=1e9,mi=g.P+1;for(let i=g.P+1;i<=g.E;i++)if(g.fast[i]<mn){mn=g.fast[i];mi=i}
+  const den=g.fast[pi]-g.slow[pi];return {v:(g.fast[pi]-mn)/Math.max(den,1e-9),pi,mi}}
+function rsiFloor(g){let mn=101,mi=g.P+1;for(let i=g.P+1;i<=g.E;i++)if(g.rsi[i]<mn){mn=g.rsi[i];mi=i}return {v:mn,mi}}
+function prevPB(g){const a=g.bounds[g.legSegPrev],b=g.bounds[g.legSegPrev+1];let lo=1e9,li=a,rm=101,ri=a;for(let i=a;i<=b;i++){if(g.bars[i].l<lo){lo=g.bars[i].l;li=i}if(g.rsi[i]<rm){rm=g.rsi[i];ri=i}}return {lo,li,rm,ri}}
+function hidDiv(g){const p=prevPB(g);let lo=1e9,li=g.P+1;for(let i=g.P+1;i<=g.E;i++)if(g.bars[i].l<lo){lo=g.bars[i].l;li=i}const f=rsiFloor(g);return {dP:(lo-p.lo)/A(g),dR:f.v-p.rm,p,li,lo,f}}
+function volRatio(g){const ls=legStart(g);let a=0,na=0,b=0,nb=0;for(let i=ls;i<=g.P;i++){a+=g.vol[i];na++}for(let i=g.P+1;i<=g.E;i++){b+=g.vol[i];nb++}return (b/nb)/(a/na)}
+function force(g){const ls=legStart(g);let fi=0,fr=0;for(let i=Math.max(ls,1);i<=g.P;i++)fi+=(g.closes[i]-g.closes[i-1])*g.vol[i];for(let i=g.P+1;i<=g.E;i++)fr+=(g.closes[i]-g.closes[i-1])*g.vol[i];return Math.abs(Math.min(fr,0))/Math.max(fi,1e-9)}
+
+// Browser renderer: SVG charts for A–C (bars) and D (daily candles), plus page assembly.
+
+SCEN.A1={good:mk(12,[{n:45,d:12,v:0.25}],[TOUCH(22,0.22)]),bad:mk(11,[{n:30,d:12,v:0.3}],[TOUCH(70,0.3)])};
+SCEN.A6={good:mk(13,[{n:40,d:13,v:0.35}],[TOUCH(12,0.3)]),bad:mk(14,[{n:7,d:6.5,v:0.15,wk:0.4}],[{n:70,d:-2,v:0.22},TOUCH(20,0.22)])};
+SCEN.A7={good:mk(15,[{n:30,d:7,v:0.25}],[TOUCH(70,0.2)]),bad:mk(16,[{n:36,d:11,v:0.3}],[TOUCH(6,0.2,{wk:0.4})])};
+SCEN.A8={good:mk(17,[{n:30,d:7,v:0.25}],[TOUCH(5,0.2,{wk:0.4})]),bad:mk(18,[{n:36,d:11,v:0.3}],[TOUCH(70,0.25)])};
+SCEN.C6={good:mk(19,[{n:20,d:7,v:0.3},{n:20,d:-2.5,v:0.2},{n:18,d:9,v:0.3}],[TOUCH(7,0.2,{wk:0.4})]),bad:mk(20,[{n:20,d:7,v:0.3},{n:8,d:-2.5,v:0.25},{n:12,d:2.5,v:0.3}],[TOUCH(10,0.2,{wk:0.4})])};
+SCEN.V1={good:mk(21,[{n:36,d:11,v:0.35,vm:1.6}],[TOUCH(40,0.3,{vm:0.6})]),bad:mk(22,[{n:36,d:11,v:0.35,vm:0.8}],[TOUCH(40,0.3,{vm:1.7})])};
+SCEN.V2={good:mk(23,[{n:36,d:11,v:0.35,vm:1.5}],[TOUCH(45,0.3,{vm:0.6})]),bad:mk(24,[{n:36,d:11,v:0.35,vm:0.9}],[TOUCH(10,0.2,{wk:0.4,vm:2.0})])};
+const SEEDS={"A1":{"good":{"seed":11001,"v":0.37},"bad":{"seed":12001,"v":1.15}},"A2":{"good":{"seed":21007,"v":0.65},"bad":{"seed":22094,"v":2.31}},"A3":{"good":{"seed":31002,"v":0.27},"bad":{"seed":32001,"v":4.87}},"A4":{"good":{"seed":41002,"v":0.97},"bad":{"seed":42001,"v":12.71}},"A5":{"good":{"seed":51001,"v":-0.66},"bad":{"seed":52002,"v":0.59}},"B1":{"good":{"seed":61001,"v":3.64},"bad":{"seed":62005,"v":1.13}},"B2":{"good":{"seed":71002,"v":1.27},"bad":{"seed":72001,"v":0.6}},"B3":{"good":{"seed":81001,"v":19.58},"bad":{"seed":82001,"v":8.27}},"B4":{"good":{"seed":91001,"v":23},"bad":{"seed":92042,"v":4}},"B5":{"good":{"seed":101001,"v":1},"bad":{"seed":102001,"v":4}},"C1":{"good":{"seed":111001,"v":1.15},"bad":{"seed":112001,"v":2.79}},"C2":{"good":{"seed":121001,"v":0},"bad":{"seed":122002,"v":1}},"C3":{"good":{"seed":131145,"v":0.44},"bad":{"seed":132098,"v":0.81}},"C4":{"good":{"seed":141003,"v":6.25},"bad":{"seed":142003,"v":25}},"C5":{"good":{"seed":151001,"v":0.09},"bad":{"seed":152003,"v":0.63}}};
+
+SEEDS.A1={good:{seed:11001},bad:{seed:12001}};SEEDS.A6={good:{seed:13001},bad:{seed:14009}};SEEDS.A7={good:{seed:15003},bad:{seed:16001}};SEEDS.A8={good:{seed:17001},bad:{seed:18028}};SEEDS.C6={good:{seed:19001},bad:{seed:20001}};SEEDS.V1={good:{seed:21001},bad:{seed:22001}};SEEDS.V2={good:{seed:23001},bad:{seed:24001}};
+const fx=(v,d=2)=>(v<0?'−':'')+Math.abs(v).toFixed(d).replace('.',',');
+function legDDx(g){let hm=-1e9,hi=0,dd=0,a=0,b=0;for(let i=legStart(g);i<=g.P;i++){if(g.bars[i].h>hm){hm=g.bars[i].h;hi=i}const d=hm-g.bars[i].l;if(d>dd){dd=d;a=hi;b=i}}return {dd,a,b}}
+const B2SPLIT=g=>g.bounds[SCEN.B2.good.legSeg+2];
+const VAL={
+ A1:g=>histArea(g), A2:g=>histSlope(g), A3:g=>speed(g), A4:g=>durRatio(g),
+ A5:g=>{const e=erDiff(g);return e.erR-e.erI}, B1:g=>maxBody(g).v,
+ B2:g=>{const m=momHigh(g,B2SPLIT(g));return m.cur/m.prior},
+ B3:g=>H(g)/A(g), B4:g=>microRun(g).n, B5:g=>touches(g,stackFrom(g)).length,
+ C1:g=>D(g)/legDDx(g).dd, C2:g=>{const sw=swingLow(g);return g.bars[g.E].l<g.bars[sw].l?1:0},
+ C3:g=>D(g)/H(g), C4:g=>nR(g)/4, C5:g=>gapShare(g).share,
+ A1:g=>a1sig(g), A6:g=>histArea(g), A7:g=>dip310(g).v, A8:g=>rsiFloor(g).v, C6:g=>hidDiv(g), V1:g=>volRatio(g), V2:g=>force(g)};
+
+function el(t,a,txt){let s='<'+t;for(const k in a)s+=` ${k}="${a[k]}"`;return txt==null?s+'/>':s+'>'+txt+'</'+t+'>'}
+function txt(x,y,s,cls,anchor){return el('text',{x:x.toFixed(1),y:y.toFixed(1),class:cls||'lbl','text-anchor':anchor||'start'},s)}
+function line(x1,y1,x2,y2,cls){return el('line',{x1:x1.toFixed(1),y1:y1.toFixed(1),x2:x2.toFixed(1),y2:y2.toFixed(1),class:cls})}
+function poly(pts,cls){return el('polyline',{points:pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' '),class:cls})}
+function vbr(x,y1,y2,label,cls,side){const d=side==='l'?-5:5;return line(x,y1,x,y2,cls)+line(x,y1,x-d,y1,cls)+line(x,y2,x-d,y2,cls)+txt(x+d*1.2,(y1+y2)/2+4,label,'lbl '+cls,side==='l'?'end':'start')}
+function hbr(x1,x2,y,label,cls){return line(x1,y,x2,y,cls)+line(x1,y-4,x1,y+4,cls)+line(x2,y-4,x2,y+4,cls)+txt((x1+x2)/2,y+14,label,'lbl '+cls,'middle')}
+
+const W=560,HP=240,HO=86;
+function chart(g,key){
+  const OSCM={A1:'dsig',A2:'hist',B2:'hist',A6:'hist',A7:'l310',A8:'rsi',C6:'rsi',V1:'vol',V2:'vol'};const mode=OSCM[key];const osc=!!mode;
+  const v0=g.view,v1=g.E+2,n=v1-v0;
+  let lo=1e9,hi=-1e9;for(let i=v0;i<=g.E;i++){lo=Math.min(lo,g.bars[i].l,g.eA[i],g.eS[i],g.eF[i]);hi=Math.max(hi,g.bars[i].h,g.eF[i])}
+  const pad=(hi-lo)*0.08;lo-=pad;hi+=pad*1.6;
+  const top=osc?6:6, bot=HP-22;
+  const x=i=>8+(i-v0+0.5)*(W-92)/n, y=p=>top+(hi-p)/(hi-lo)*(bot-top);
+  const bw=Math.max(1,(W-92)/n*0.66);
+  let s='';
+  const ls=legStart(g);
+  s+=el('rect',{x:x(ls)-bw/2,y:top,width:x(g.P)-x(ls)+bw,height:bot-top,class:'shI'});
+  s+=el('rect',{x:x(g.P)+bw/2,y:top,width:x(g.E)-x(g.P),height:bot-top,class:'shR'});
+  s+=txt((x(ls)+x(g.P))/2,top+12,'импульс','lbl tI','middle')+txt((x(g.P)+x(g.E))/2+bw/2,top+12,'откат','lbl tR','middle');
+  for(let i=v0;i<=g.E;i++){const B=g.bars[i],up=B.c>=B.o,X=x(i);
+    s+=line(X,y(B.h),X,y(B.l),up?'wu':'wd');
+    s+=el('rect',{x:(X-bw/2).toFixed(1),y:y(Math.max(B.o,B.c)).toFixed(1),width:bw.toFixed(1),height:Math.max(0.8,Math.abs(y(B.o)-y(B.c))).toFixed(1),class:up?'cu':'cd'})}
+  const pl=(arr,cls)=>poly(Array.from({length:g.E-v0+1},(_,k)=>[x(v0+k),y(arr[v0+k])]),cls);
+  s+=pl(g.eS,'eS')+pl(g.eF,'eF')+pl(g.eA,'eA');
+  if(!['C1','C3','C5'].includes(key))s+=txt(x(g.E)+6,y(g.eA[g.E])+4,'якорь','lbl eAt')+txt(x(g.E)+6,y(g.eS[g.E])+4,'медл.','lbl mut');
+  // markers
+  s+=txt(x(ls),y(g.bars[ls].l)+14,'S','mk','middle')+txt(x(g.P),y(g.bars[g.P].h)-6,'P','mk','middle');
+  s+=el('circle',{cx:x(g.E).toFixed(1),cy:y(g.eA[g.E]).toFixed(1),r:4,class:'ent'});
+  const ctx={x,y,bw,v0,v1,top,bot,ls};
+  s+=(ANN[key]||(()=>''))(g,ctx);
+  let h=HP;
+  if(osc&&mode==='dsig'){const o0=HP+4,o1=HP+HO-6;const d=dsig(g);let m=1e-9;for(let i=v0;i<=g.E;i++)if(!isNaN(d[i]))m=Math.max(m,Math.abs(d[i]));
+    const oy=v=>(o0+o1)/2-v/m*(o1-o0)/2;const w=a1win(g);
+    s+=el('rect',{x:4,y:o0-2,width:W-8,height:o1-o0+4,class:'oscbg'})+line(8,oy(0),W-8,oy(0),'zero');
+    for(let i=v0;i<=g.E;i++){const v=d[i];if(isNaN(v))continue;let c='hb';if(i>=w.i0&&i<=g.P)c='hbI';if(i>=w.r0&&i<=g.E)c='hbR';
+      s+=el('rect',{x:(x(i)-bw/2).toFixed(1),y:Math.min(oy(0),oy(v)).toFixed(1),width:bw.toFixed(1),height:Math.max(0.5,Math.abs(oy(v)-oy(0))).toFixed(1),class:c})}
+    s+=txt(10,o0+10,'столбики: изменение (EMA5 − якорь) за бар','lbl mut');
+    s+=txt(W-10,o1-2,'A1 = '+fx(a1sig(g)),'lbl ann','end');
+    h=HP+HO;}
+  else if(osc&&mode==='hist'){const o0=HP+4,o1=HP+HO-6;let m=1e-9;for(let i=v0;i<=g.E;i++)m=Math.max(m,Math.abs(g.hist[i]));
+    const oy=v=>(o0+o1)/2-v/m*(o1-o0)/2;
+    s+=el('rect',{x:4,y:o0-2,width:W-8,height:o1-o0+4,class:'oscbg'})+line(8,oy(0),W-8,oy(0),'zero');
+    for(let i=v0;i<=g.E;i++){const v=g.hist[i];let c='hb';if(i>=g.S&&i<=g.P&&v>0)c='hbI';if(i>g.P&&i<=g.E&&v<0)c='hbR';
+      s+=el('rect',{x:(x(i)-bw/2).toFixed(1),y:Math.min(oy(0),oy(v)).toFixed(1),width:bw.toFixed(1),height:Math.max(0.5,Math.abs(oy(v)-oy(0))).toFixed(1),class:c})}
+    s+=txt(10,o0+10,'осциллятор: close − EMA20','lbl mut');
+    s+=(ANNO[key]||(()=>''))(g,Object.assign(ctx,{oy,o0,o1}));
+    h=HP+HO;}
+  else if(osc){const o0=HP+4,o1=HP+HO-6;let lo2=1e9,hi2=-1e9;
+    const src=mode==='l310'?[g.fast,g.slow]:mode==='rsi'?[g.rsi]:[g.vol];
+    for(let i=v0;i<=g.E;i++)for(const a of src){if(!isNaN(a[i])){lo2=Math.min(lo2,a[i]);hi2=Math.max(hi2,a[i])}}
+    if(mode==='rsi'){lo2=Math.min(lo2,30);hi2=Math.max(hi2,65)} if(mode==='vol')lo2=0;
+    const oy=v=>o1-(v-lo2)/(hi2-lo2||1)*(o1-o0);
+    s+=el('rect',{x:4,y:o0-2,width:W-8,height:o1-o0+4,class:'oscbg'});
+    if(mode==='l310'){s+=line(8,oy(0),W-8,oy(0),'zero');const pts=a=>{const p=[];for(let i=v0;i<=g.E;i++)if(!isNaN(a[i]))p.push([x(i),oy(a[i])]);return p};
+      s+=poly(pts(g.slow),'eS')+poly(pts(g.fast),'aI');s+=txt(10,o0+10,'3-10-16: быстрая (зелёная) и медленная (пунктир)','lbl mut')}
+    if(mode==='rsi'){[40,50].forEach(L=>{s+=line(8,oy(L),W-8,oy(L),L===40?'fibB':'fib')+txt(W-10,oy(L)-3,String(L),'lbl mut','end')});const p=[];for(let i=v0;i<=g.E;i++)if(!isNaN(g.rsi[i]))p.push([x(i),oy(g.rsi[i])]);s+=poly(p,'eA');s+=txt(10,o0+10,'RSI '+(14*RSIK),'lbl mut')}
+    if(mode==='vol'){const ls2=legStart(g);for(let i=v0;i<=g.E;i++){let c='hb';if(i>=ls2&&i<=g.P)c='hbI';if(i>g.P)c='hbR';s+=el('rect',{x:(x(i)-bw/2).toFixed(1),y:oy(g.vol[i]).toFixed(1),width:bw.toFixed(1),height:Math.max(0.5,o1-oy(g.vol[i])).toFixed(1),class:c})}s+=txt(10,o0+10,'объём','lbl mut')}
+    s+=(ANNO[key]||(()=>''))(g,Object.assign(ctx,{oy,o0,o1}));
+    h=HP+HO;}
+  return el('svg',{viewBox:`0 0 ${W} ${h}`,class:'ch',role:'img'},s);
+}
+const ANN={
+ C6:(g,c)=>{const h=hidDiv(g);const up=h.dP>=0;return line(c.x(h.p.li),c.y(h.p.lo),c.x(h.li),c.y(h.lo),up?'aI':'aR')+el('circle',{cx:c.x(h.p.li).toFixed(1),cy:c.y(h.p.lo).toFixed(1),r:3,class:'dot'})+txt(c.x(h.p.li)-4,c.y(h.p.lo)+14,'прошлый откат','lbl ann','end')+txt(c.x(h.li)-4,c.y(h.lo)+16,up?'минимум выше':'минимум ниже','lbl '+(up?'tI':'tR'),'end')},
+ A3:(g,c)=>{const l=c.ls;return line(c.x(l),c.y(g.bars[l].l),c.x(g.P),c.y(g.bars[g.P].h),'aI')+line(c.x(g.P),c.y(g.bars[g.P].h),c.x(g.E),c.y(g.bars[g.E].l),'aR')
+   +txt(c.x(g.E)-4,c.y(g.bars[g.E].l)+16,`скорость R ÷ I = ${fx(speed(g))}`,'lbl tR','end')},
+ A4:(g,c)=>hbr(c.x(c.ls),c.x(g.P),c.bot+6,'nI = '+nI(g),'aI')+hbr(c.x(g.P),c.x(g.E),c.bot+6,'nR = '+nR(g),'aR'),
+ A5:(g,c)=>{const l=c.ls,e=erDiff(g);return line(c.x(l),c.y(g.closes[l]),c.x(g.P),c.y(g.closes[g.P]),'aI')+line(c.x(g.P),c.y(g.closes[g.P]),c.x(g.E),c.y(g.closes[g.E]),'aR')
+   +txt((c.x(l)+c.x(g.P))/2,c.bot+14,'ER I = '+fx(e.erI),'lbl tI','middle')+txt((c.x(g.P)+c.x(g.E))/2,c.bot+14,'ER R = '+fx(e.erR),'lbl tR','middle')},
+ B1:(g,c)=>{const m=maxBody(g),B=g.bars[m.i];return el('rect',{x:c.x(m.i)-c.bw/2-3,y:c.y(B.h)-3,width:c.bw+6,height:c.y(B.l)-c.y(B.h)+6,class:'box'})
+   +txt(c.x(m.i)-c.bw-4,c.y((B.o+B.c)/2)+4,'тело '+fx(m.v)+' ATR','lbl ann','end')},
+ B2:(g,c)=>{const sp=B2SPLIT(g);let p1=0,i1=g.S;for(let i=g.S;i<sp;i++)if(g.bars[i].h>(g.bars[i1].h))i1=i;
+   return line(c.x(sp),c.top,c.x(sp),c.bot,'sep')+txt(c.x(sp)+3,c.bot-4,'волна 2','lbl mut')+txt(c.x(sp)-3,c.bot-4,'волна 1','lbl mut','end')
+   +line(c.x(i1),c.y(g.bars[i1].h),c.x(g.P),c.y(g.bars[g.P].h),'ann')},
+ B3:(g,c)=>{const X=c.x(g.P)+14;return vbr(X,c.y(g.bars[g.P].h),c.y(legLow(g)),'H = '+fx(H(g)/A(g),1)+' ATR','ann')},
+ B4:(g,c)=>{const m=microRun(g);let s='';for(let i=m.a;i<=m.b;i++)s+=el('circle',{cx:c.x(i).toFixed(1),cy:(c.y(g.bars[i].l)+5).toFixed(1),r:1.8,class:'dot'});
+   return s+txt(c.x(m.a)-6,c.y(g.bars[m.a].l)+14,m.n+' баров подряд low выше','lbl ann','end')},
+ B5:(g,c)=>{const sf=stackFrom(g),t=touches(g,sf);let s=line(c.x(sf),c.top,c.x(sf),c.bot,'sep')+txt(c.x(sf)+3,c.top+26,'стек собран','lbl mut');
+   t.forEach((i,k)=>{s+=el('circle',{cx:c.x(i).toFixed(1),cy:c.y(g.eA[i]).toFixed(1),r:8,class:'tch'})+txt(c.x(i),c.y(g.eA[i])+4,String(k+1),'lbl tn','middle')});return s},
+ C1:(g,c)=>{const d=legDDx(g);return vbr(c.x(d.b)+8,c.y(g.bars[d.a].h),c.y(g.bars[d.b].l),'прошлый max','aI','r')
+   +vbr(c.x(g.E)+8,c.y(g.bars[g.P].h),c.y(g.bars[g.E].l),'D = '+fx(D(g)/d.dd,1)+'×','aR','r')+line(c.x(g.P),c.y(g.bars[g.P].h),c.x(g.E)+8,c.y(g.bars[g.P].h),'thin')},
+ C2:(g,c)=>{const sw=swingLow(g),L=g.bars[sw].l,br=g.bars[g.E].l<L;return line(c.x(sw),c.y(L),c.x(g.E)+20,c.y(L),br?'aR':'aI')
+   +txt(c.x(sw)-4,c.y(L)+4,'swing low','lbl ann','end')+txt(c.x(g.E)-4,c.y(Math.min(L,g.bars[g.E].l))+16,br?'пробит':'удержан','lbl '+(br?'tR':'tI'),'end')},
+ C3:(g,c)=>{const P=g.bars[g.P].h,h=H(g);let s='';[[0.5,'0,5'],[0.618,'0,618'],[0.786,'0,786'],[1,'1,0']].forEach(([f,l])=>{const Y=c.y(P-f*h);
+   s+=line(c.x(c.ls),Y,c.x(g.E)+18,Y,f>=0.786?'fibB':'fib')+txt(c.x(g.E)+20,Y+4,l,'lbl mut')});return s+txt(c.x(g.P),c.bot+14,'D ÷ H = '+fx(D(g)/h),'lbl ann','middle')},
+ C4:(g,c)=>hbr(c.x(g.P),c.x(g.E),c.bot+6,'откат '+fx(nR(g)/4,1).replace(',0','')+' ч','aR'),
+ C5:(g,c)=>{const P=g.bars[g.P].h,a0=g.eA[g.P],a1=g.eA[g.E],xe=c.x(g.E)+12;
+   return vbr(c.x(g.P)-8,c.y(P),c.y(a0),'зазор','ann','l')+line(c.x(g.P),c.y(a0),xe,c.y(a0),'thin')+line(c.x(g.P),c.y(P),xe,c.y(P),'thin')
+   +vbr(xe,c.y(a1),c.y(a0),'EMA '+Math.round(gapShare(g).share*100)+'%','aR','r')+vbr(xe,c.y(P),c.y(a1),'цена','aI','r')},
+};
+const ANNO={
+ A6:(g,c)=>txt(c.x(g.P),c.o1-2,'площадь R ÷ площадь I = '+fx(histArea(g)),'lbl ann','middle'),
+ A7:(g,c)=>{const d=dip310(g);return el('circle',{cx:c.x(d.pi).toFixed(1),cy:c.oy(g.fast[d.pi]).toFixed(1),r:3,class:'dot'})+el('circle',{cx:c.x(d.mi).toFixed(1),cy:c.oy(g.fast[d.mi]).toFixed(1),r:3,class:'dot'})+line(c.x(d.mi),c.oy(g.fast[d.pi]),c.x(d.mi),c.oy(g.fast[d.mi]),'ann')+txt(W-10,c.o1-2,'провал = '+fx(d.v,1)+' × (пик − медленная)','lbl ann','end')},
+ A8:(g,c)=>{const f=rsiFloor(g);return el('circle',{cx:c.x(f.mi).toFixed(1),cy:c.oy(g.rsi[f.mi]).toFixed(1),r:3.5,class:'dot'})+txt(c.x(f.mi)-6,c.oy(g.rsi[f.mi])+4,'min '+fx(f.v,0),'lbl ann','end')},
+ C6:(g,c)=>{const h=hidDiv(g);return line(c.x(h.p.ri),c.oy(h.p.rm),c.x(h.f.mi),c.oy(h.f.v),'ann')+el('circle',{cx:c.x(h.p.ri).toFixed(1),cy:c.oy(h.p.rm).toFixed(1),r:3,class:'dot'})+el('circle',{cx:c.x(h.f.mi).toFixed(1),cy:c.oy(h.f.v).toFixed(1),r:3,class:'dot'})+txt(W-10,c.o1-2,h.dR<0?'RSI ниже прошлого минимума':'RSI выше прошлого минимума','lbl ann','end')},
+ V1:(g,c)=>txt(W-10,c.o0+10,'объём R ÷ I = '+fx(volRatio(g)),'lbl ann','end'),
+ V2:(g,c)=>txt(W-10,c.o0+10,'сила R ÷ I = '+fx(force(g)),'lbl ann','end'),
+ A1:(g,c)=>txt(c.x(g.P),c.o1-2,'площадь R ÷ площадь I = '+fx(histArea(g)),'lbl ann','middle'),
+ A2:(g,c)=>{const k=3;let bi=g.S+k,bv=0,ri=g.P+k,rv=0;for(let i=g.S+k;i<=g.P;i++){const d=Math.abs(g.hist[i]-g.hist[i-k]);if(d>bv){bv=d;bi=i}}
+   for(let i=g.P+k;i<=g.E;i++){const d=Math.abs(g.hist[i]-g.hist[i-k]);if(d>rv){rv=d;ri=i}}
+   return line(c.x(bi-k),c.oy(g.hist[bi-k]),c.x(bi),c.oy(g.hist[bi]),'aI w3')+line(c.x(ri-k),c.oy(g.hist[ri-k]),c.x(ri),c.oy(g.hist[ri]),'aR w3')
+   +txt(W-10,c.o1-2,'крутизна R ÷ I = '+fx(histSlope(g)),'lbl ann','end')},
+ B2:(g,c)=>{const sp=B2SPLIT(g),m=momHigh(g,sp);return line(c.x(g.S),c.oy(m.prior),c.x(g.E),c.oy(m.prior),'thin')
+   +txt(W-10,c.o1-2,m.cur>m.prior?'моментум обновил максимум':'моментум ниже прошлого: дивергенция','lbl ann','end')},
+};
+
+// ---------- Daily candles (group D) ----------
+function daily(seed,over,frac){
+  const r=rng(seed);const N=26-over.length;let c=100;const bars=[];
+  for(let i=0;i<N;i++){const o=c;c=o+0.1+gauss(r)*0.8;bars.push({o,c,h:Math.max(o,c)+Math.abs(gauss(r))*0.4,l:Math.min(o,c)-Math.abs(gauss(r))*0.4,v:Math.exp(gauss(r)*0.22)})}
+  const atr=bars.slice(-14).reduce((s,b,i,a)=>s+(b.h-b.l),0)/14;
+  over.forEach((ov,k)=>{const o=c;c=o+ov.body*atr;bars.push({o,c,h:Math.max(o,c)+(ov.uw??0.2)*atr,l:Math.min(o,c)-(ov.lw??0.2)*atr,v:ov.v??Math.exp(gauss(r)*0.2),mark:ov.mark,cur:ov.cur})});
+  const vs=bars.slice(-21,-1).map(b=>b.v),vm=vs.reduce((a,b)=>a+b,0)/vs.length,vsd=Math.sqrt(vs.reduce((a,b)=>a+(b-vm)**2,0)/vs.length);
+  return {bars,atr,vm,vsd,frac};
+}
+const NORMAL={body:0.5,uw:0.25,lw:0.3};
+const DSC={
+ D1:{good:[NORMAL,{body:1.0,uw:0.15,lw:0.3,cur:1,mark:1}],bad:[NORMAL,{body:-1.8,uw:0.2,lw:0.15,cur:1,mark:1}],
+     val:d=>{const b=d.bars.at(-1);return (b.c-b.o)/d.atr},fmt:v=>'текущая: '+fx(v,1)+' ATR'},
+ D2:{good:[NORMAL,{body:0.9,uw:0.12,lw:0.8,cur:1,mark:1}],bad:[NORMAL,{body:-0.2,uw:1.3,lw:0.2,cur:1,mark:1}],
+     val:d=>{const b=d.bars.at(-1);return (b.c-b.l)/(b.h-b.l)},fmt:v=>'место в диапазоне: '+fx(v)},
+ D3:{good:[{body:0.8,uw:0.2,lw:0.4,mark:1},{body:0.3,uw:0.15,lw:0.2,cur:1}],bad:[{body:0.2,uw:1.6,lw:0.2,mark:1},{body:0.15,uw:0.15,lw:0.2,cur:1}],
+     val:d=>{const b=d.bars.at(-2);return (b.h-Math.max(b.o,b.c))/(b.h-b.l)},fmt:(v,d)=>{const b=d.bars.at(-2);return 'фитиль '+Math.round(v*100)+'% диапазона, диапазон '+fx((b.h-b.l)/d.atr,1)+' ATR'}},
+ D4:{good:[{body:0.9,uw:0.2,lw:0.3,mark:1},{body:0.25,uw:0.2,lw:0.2,cur:1}],bad:[{body:-2.0,uw:0.15,lw:0.2,mark:1},{body:0.25,uw:0.2,lw:0.2,cur:1}],
+     val:d=>{const b=d.bars.at(-2);return Math.max(0,b.o-b.c)/d.atr},fmt:v=>'тело против: '+fx(v,1)+' ATR'},
+ D5:{good:[{body:0.2,uw:2.2,lw:0.2,v:1.0,mark:1},{body:0.2,uw:0.15,lw:0.2,cur:1}],bad:[{body:0.2,uw:2.2,lw:0.2,v:2.3,mark:1},{body:0.2,uw:0.15,lw:0.2,cur:1}],
+     val:d=>{const b=d.bars.at(-2);return (b.v-d.vm)/d.vsd},fmt:v=>'фитиль против, объём z = '+fx(v,1)},
+ D6:{good:[{body:1.7,uw:0.2,lw:0.2,v:2.0,mark:1},{body:0.2,uw:0.2,lw:0.2,cur:1}],bad:[{body:0.1,uw:0.45,lw:0.4,v:2.1,mark:1},{body:0.2,uw:0.2,lw:0.2,cur:1}],
+     val:d=>{const b=d.bars.at(-2);return (b.v/d.vm)/Math.max(0.05,Math.abs(b.c-b.o)/d.atr)},fmt:v=>'усилие ÷ результат = '+fx(v,1)},
+};
+function dchart(d,key){
+  const H1=200,HV=60,n=d.bars.length+2.5;const x=i=>10+(i+0.5)*(W-20)/n,bw=(W-20)/n*0.62;
+  let lo=1e9,hi=-1e9;d.bars.forEach(b=>{lo=Math.min(lo,b.l);hi=Math.max(hi,b.h)});const pad=(hi-lo)*0.08;lo-=pad;hi+=pad;
+  const y=p=>8+(hi-p)/(hi-lo)*(H1-16);let vmax=0;d.bars.forEach(b=>vmax=Math.max(vmax,b.v));
+  const vy=v=>H1+HV-4-v/vmax*(HV-12);let s='';
+  d.bars.forEach((b,i)=>{const up=b.c>=b.o,X=x(i);
+    if(b.mark)s+=el('rect',{x:X-bw/2-4,y:4,width:bw+8,height:H1+HV-6,class:'hl'});
+    s+=line(X,y(b.h),X,y(b.l),b.cur?'wcur':(up?'wu':'wd'));
+    s+=el('rect',{x:(X-bw/2).toFixed(1),y:y(Math.max(b.o,b.c)).toFixed(1),width:bw.toFixed(1),height:Math.max(0.8,Math.abs(y(b.o)-y(b.c))).toFixed(1),class:b.cur?(up?'ccu':'ccd'):(up?'cu':'cd')});
+    s+=el('rect',{x:(X-bw/2).toFixed(1),y:vy(b.v).toFixed(1),width:bw.toFixed(1),height:(H1+HV-4-vy(b.v)).toFixed(1),class:b.mark&&key==='D5'||b.mark&&key==='D6'?'vbh':'vb'});});
+  s+=line(10,vy(d.vm),W-10,vy(d.vm),'thin')+txt(12,H1+10,'объём, линия = среднее за 20','lbl mut');
+  const L=d.bars.length-1,c=d.bars[L];s+=txt(W-10,H1-4,'контур — текущая свеча, прошло '+Math.round(d.frac*100)+'% суток','lbl mut','end');
+  if(key==='D2'){const X=x(L)+bw/2+6;const t1=c.l+(c.h-c.l)/3,t2=c.l+2*(c.h-c.l)/3;s+=line(X,y(c.h),X,y(c.l),'ann')+line(X-3,y(t1),X+3,y(t1),'ann')+line(X-3,y(t2),X+3,y(t2),'ann')+el('circle',{cx:X,cy:y(c.c),r:3,class:'ent'})}
+  if(key==='D1'){s+=line(x(L)-bw*1.6,y(c.o),x(L)+bw*1.6,y(c.o),'thin')+txt(x(L)+bw*1.7,y(c.o)+4,'open','lbl mut')}
+  return el('svg',{viewBox:`0 0 ${W} ${H1+HV}`,class:'ch',role:'img'},s);
+}
+function build(){
+  document.querySelectorAll('[data-m]').forEach(card=>{
+    const k=card.dataset.m;
+    ['good','bad'].forEach(w=>{const box=card.querySelector('.'+w+' .pic'),val=card.querySelector('.'+w+' .val');
+      if(k[0]==='D'){const d=daily(k.charCodeAt(1)*97+5,DSC[k][w],0.6);box.innerHTML=dchart(d,k);val.textContent=DSC[k].fmt(DSC[k].val(d),d);return}
+      const spec=Object.assign({},SCEN[k][w],{seed:SEEDS[k][w].seed});
+      if(k==='B5'){const g0=generate(spec);spec.view=Math.max(0,stackFrom(g0)-15)}
+      const g=generate(spec);g.legSegPrev=spec.legSeg+1;addInd(g,spec);box.innerHTML=chart(g,k);const v=VAL[k](g);
+      val.textContent=VFMT[k](v);});
+  });
+}
+const VFMT={_:0,A1:v=>'площадь R ÷ I = '+fx(v),A2:v=>'крутизна R ÷ I = '+fx(v),A3:v=>'скорость R ÷ I = '+fx(v),A4:v=>'nR ÷ nI = '+fx(v,1),
+ A5:v=>'ER(R) − ER(I) = '+fx(v),B1:v=>'макс. тело = '+fx(v,1)+' ATR',B2:v=>'пик моментума волны 2 ÷ волны 1 = '+fx(v),B3:v=>'H = '+fx(v,1)+' ATR',
+ B4:v=>'длина серии = '+v,B5:v=>'касание № '+v,C1:v=>'D ÷ прошлый max = '+fx(v,1),C2:v=>v?'swing low пробит':'swing low удержан',
+ C3:v=>'D ÷ H = '+fx(v),C4:v=>'откат = '+fx(v,1).replace(',0','')+' ч',C5:v=>'EMA закрыла '+Math.round(v*100)+'% зазора',
+ A1:v=>'A1 = скорость отката ÷ скорость импульса = '+fx(v),A6:v=>'площадь R ÷ I = '+fx(v),A7:v=>'провал быстрой ÷ (пик − медленная) = '+fx(v,1),A8:v=>'min RSI на откате = '+fx(v,1),
+ C6:h=>'low: '+(h.dP>=0?'+':'')+fx(h.dP,1)+' ATR к прошлому, min RSI: '+(h.dR>=0?'+':'')+fx(h.dR,1),V1:v=>'объём R ÷ I = '+fx(v),V2:v=>'сила R ÷ I = '+fx(v)};
+document.addEventListener('DOMContentLoaded',build);if(document.readyState!=='loading')build();
+
+</script>
+</body></html>
