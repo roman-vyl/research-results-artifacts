@@ -1,0 +1,94 @@
+<title>EMA200: досье</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one reading column; candidates first, then rules, history (a real sequence), checks, open steps, link index */
+:root{--bg:#f5f6f7;--panel:#fff;--fg:#1c2227;--muted:#5d6871;--line:#dce1e5;--acc:#11867f;--soft:#e4f2f0;--warn:#a5641a;--bad:#b23a32;
+--sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#13171a;--panel:#1b2024;--fg:#e3e7ea;--muted:#9aa5ad;--line:#2d3439;--acc:#3fd0c4;--soft:#173230;--warn:#f0b060;--bad:#ff7a6e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#13171a;--panel:#1b2024;--fg:#e3e7ea;--muted:#9aa5ad;--line:#2d3439;--acc:#3fd0c4;--soft:#173230;--warn:#f0b060;--bad:#ff7a6e;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.55}
+.wrap{max-width:1000px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+h1{font-size:1.7rem;margin:0;text-wrap:balance}h2{font-size:1.2rem;margin:0;border-top:2px solid var(--line);padding-top:16px}
+p{margin:0;max-width:78ch}.m{color:var(--muted);font-size:.85rem}
+ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:5px;max-width:82ch}
+.box{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.lead{background:var(--soft);border-color:transparent}
+.tw{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:.86rem;font-variant-numeric:tabular-nums}
+th,td{padding:7px 9px;text-align:left;border-bottom:1px solid var(--line);white-space:nowrap}thead th{font-size:.74rem;color:var(--muted);font-weight:600}td{font-family:var(--mono)}td.t{font-family:var(--sans);white-space:normal}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}tbody th{font-weight:600}
+.pill{font-family:var(--mono);font-size:.72rem;border:1px solid currentColor;border-radius:9px;padding:0 7px;white-space:nowrap}.pill.ok{color:var(--acc)}.pill.w{color:var(--warn)}.pill.x{color:var(--bad)}
+ol.hist{margin:0;padding:0;list-style:none;counter-reset:h;display:flex;flex-direction:column;gap:8px}
+ol.hist li{counter-increment:h;position:relative;padding-left:40px;max-width:85ch}
+ol.hist li::before{content:counter(h);position:absolute;left:0;top:1px;width:26px;height:26px;border-radius:50%;border:1.5px solid var(--acc);color:var(--acc);font:600 .8rem var(--mono);display:flex;align-items:center;justify-content:center}
+a{color:var(--acc)}code{font-family:var(--mono);font-size:.88em}
+</style>
+<div class="wrap">
+<h1>EMA200 на BTC, ETH и SOL: что выбрано и почему</h1>
+<div class="box lead">
+<p><b>Состояние на 2026-10-22.</b> Отбор стратегий для запуска на EMA200 сделан по правилу «короткий отскок»: небольшой тейк в процентах, лонги и шорты оба в плюсе и сопоставимы, ни один год не делает больше половины прибыли. Фильтр входа: голос зон Б. Кандидаты есть на BTC и ETH; SOL под это правило пока не подходит. До запуска нужны: просмотр плато на фронте, голос Б в движке со сверкой против replay, демо Bybit.</p>
+</div>
+
+<h2>Кандидаты на запуск</h2>
+<div class="tw"><table><thead><tr><th>Монета</th><th>Клетка</th><th>Тейк</th><th>Нетто с $10 000</th><th>Винрейт</th><th>Сделок</th><th>Просадка</th><th>Худший год</th><th>Годы в плюсе</th><th>Лонг / шорт</th><th>Тейк в среднем за</th><th>Статус</th></tr></thead><tbody>
+<tr><th>BTC</th><td>W9 LB40 SL4.25 TP4.5R</td><td>2.5%</td><td>+11 502</td><td>27.9%</td><td>337</td><td>−10.5%</td><td>+3.2%</td><td>7/7</td><td>+49% / +34%</td><td>10 ч</td><td><span class="pill ok">основной</span></td></tr>
+<tr><th>BTC</th><td>W8 LB100 SL4.25 TP3.5R</td><td>2.0%</td><td>+11 740</td><td>31.3%</td><td>377</td><td>−15.0%</td><td>−6.0%</td><td>6/7</td><td>+28% / +56%</td><td>9 ч</td><td><span class="pill w">TP ниже 4R</span></td></tr>
+<tr><th>ETH</th><td>W11 LB200 SL4.5 TP4.5R</td><td>3.6%</td><td>+10 496</td><td>34.1%</td><td>85</td><td>−9.7%</td><td>+7.1%</td><td>6/6</td><td>+33% / +43%</td><td>6 ч</td><td><span class="pill ok">длинный LB</span></td></tr>
+<tr><th>ETH</th><td>W11 LB20 SL4.75 TP4.5R</td><td>3.6%</td><td>+9 976</td><td>28.5%</td><td>130</td><td>−15.2%</td><td>+2.2%</td><td>6/6</td><td>+36% / +38%</td><td>10 ч</td><td><span class="pill ok">короткий LB</span></td></tr>
+<tr><th>ETH</th><td>W7 LB170 SL4.75 TP3R</td><td>3.1%</td><td>+14 259</td><td>34.9%</td><td>327</td><td>−17.8%</td><td>−3.6%</td><td>5/6</td><td>+52% / +49%</td><td>9 ч</td><td><span class="pill w">TP ниже 4R</span></td></tr>
+</tbody></table></div>
+<p class="m">Все с голосом зон Б, 5m, комиссия 0.04% на сторону, сложный процент, одна позиция, исходы по правилу «old» лаборатории. Каждая клетка стоит на плато: у большинства соседей по W ±1 и LB ±10 те же условия выполняются. BTC на истории до 2026-09-28, как на фронте. Две стратегии на одной монете частично берут одни и те же входы: на ETH общих 35–50%, на BTC при одинаковой ширине почти все, поэтому размер позиции надо делить. Таблица: review/ctrl3/candidates_20261021.csv.</p>
+
+<h2>Правила владельца для EMA200</h2>
+<div class="box"><ul>
+<li><b>Короткий отскок.</b> Отскок от EMA200 длится часы. Тейк небольшой: на BTC около 2% уже отлично, 6% нереально. Стопы от 7.5 ATR относятся к EMA500, на EMA200 их не берём (2026-10-21 20:36 и 20:43).</li>
+<li><b>Лонг и шорт оба в плюсе и сопоставимы.</b> Стратегия, которая заработала только в бычий год, а в остальные молотит в ноль, не стратегия.</li>
+<li><b>TP ниже 4R</b> раньше считался неинтересным. Клетки с TP 3–3.5R помечены отдельно.</li>
+<li><b>Фильтры универсальные.</b> Нельзя калибровать по половинам истории или отдельно для лонга и шорта. Фильтр, который работает только на одной монете, отбрасываем (кроме набора ETH+SOL и BTC V1.4, которые ты разрешил).</li>
+<li><b>Другие монеты и другие EMA только с перекалибровкой.</b> Голос Б не переносится на EMA500 и EMA1000 BTC: там он хуже случайной отсечки.</li>
+<li>BNB, BCH и XRP на EMA200 убыточны без фильтров и выведены. Правее, на SL 4–8 × TP 4–8R, у BCH рабочей области нет. У BNB есть только карман W3–4 LB110–140 SL5.5 с просадкой −35% и обрывом на LB150.</li>
+</ul></div>
+
+<h2>Как к этому пришли</h2>
+<div class="box"><ol class="hist">
+<li><b>Поверхности без фильтров</b> BTC, ETH, SOL, BNB, BCH, XRP на EMA200: W3–14 × LB20–300 × SL 4–5 × TP 3–5R. EMA200 «моложе» EMA500: 1–3 отскока, узкие ширины без фильтров убыточны. BNB, BCH, XRP убраны.</li>
+<li><b>Независимое ревью старой калибровки (20 клеток).</b> Выборка была слишком узкой. На всей плоскости продиктованные пороги не значимы, а та же методика на EMA500 эффект видит. Вывод: фильтры на EMA200 слабее, калибровать надо на рабочих зонах.</li>
+<li><b>Рабочие зоны (утверждены 2026-10-21 16:04):</b> BTC W9–11 × LB20–60; ETH W10–12 почти все LB, W13 до LB180, W9 на больших LB; SOL W10 × LB20–200. TP от 4R, SL 4–5.</li>
+<li><b>Кривые 37 фильтров</b> на всех уникальных входах зон, со случайной отсечкой того же размера. Автоматический стартовый порог (не вредит ни одной монете, по трём вместе стабильно режет больше стопов) и твоя правка на глаз. Вето ставили там, где до края на всех трёх монетах ~90% и больше стопов.</li>
+<li><b>Голоса А, Б, В (17:04),</b> зарегистрированы на фронте вместе с касаниями ≤1/≤2/≤3. Старые голоса v3 с поверхностей удалены (18:06). Касания на рабочих зонах снижают нетто.</li>
+<li><b>Голос Б против V2 EMA200.</b> V2 считался раньше, на старой выборке, «Вторым мнением». На контрольных областях (SOL W6, SOL SL6, ETH LB 310–500, BTC SL6, ETH SL6) счёт 4:1 в пользу Б без BCH и BNB. Оба голоса лучше случайной отсечки, это не подгонка. На хороших клетках широких плоскостей Б лучше V2: BTC в 100%, ETH в 67%, SOL в 83%. V2 сильнее только в красных областях и на узких W соланы.</li>
+<li><b>Урезанный V2</b> (без фильтров, чья кривая у одной монеты шла против) хуже везде. Правило «выкидывать по направлению кривой» отвергнуто.</li>
+<li><b>Широкие стопы.</b> Лучшие плато с голосом Б ушли на SL 7.5–8 (BTC W11 LB20 +22к, ETH W4 LB300 +17,6к). Ты отклонил их как среднесрочный тренд. На BTC с SL 7.5 прибыль почти вся из лонгов: +110% против +16%. Тейк 3.6–8%, ждать его 1–1.5 дня.</li>
+<li><b>Отбор «короткий отскок»</b> дал кандидатов из таблицы выше. Твой ETH-фаворит W3 LB290 SL4.5 TP4.5R с голосом А и касанием ≤2 (+25,4к) по этому правилу длинноват: тейк около 5.5%. Его надо перепроверить глазом.</li>
+</ol></div>
+
+<h2>Как устроен голос Б</h2>
+<div class="box">
+<p>10 голосующих фильтров с общими порогами и общими весами на все монеты. Вес = насколько отрезанное хуже среднего на трёх монетах вместе: <code>r ÷ 0.55</code>, не больше 1. Веса сработавших фильтров складываются, варианты одного индикатора берутся по максимуму. Блок, если сумма ≥ 0.75 или сработало любое из 9 вето.</p>
+<p>Тяжёлые фильтры: D1 тело дневки (0.86, блокирует один), B1 нога 15m ≥ 1.37 (0.66, твой порог), V1.1 сумма объёма (0.66), A2.2 удар (0.54). Лёгкие: C3.1, V2.2, A3, B3, A5, A4 (0.15–0.41). Вето: A1, C5, A3, V1.1–V1.4, B3, C3.2 (твоё). Подробно: <a href="https://claude.ai/artifact/C3KtYaBKH7Uzhhag96f8Mx">Как устроен голос Б</a>.</p>
+</div>
+
+<h2>Что дальше</h2>
+<div class="box"><ul>
+<li><b>Посмотреть кандидатов глазом на фронте.</b> BTC и ETH на SL 4–5 × TP 3–5R с «Голос зон» = 2 уже есть на поверхностях touch_vote_6d.</li>
+<li><b>Голос Б в движке.</b> Атомарные компоненты и семантика голосования, числа из конфига. Сейчас части компонентов в движке нет (на поверхностях Calculate был заглушен для A3, A5, A6, C3.1). Нужен OpenSpec, затем сверка движка с replay на кандидатах.</li>
+<li><b>Демо Bybit,</b> с делением размера, если на монете две стратегии.</li>
+<li><b>Идея на проверку:</b> выход по времени для сделок, которые тянутся больше дня (10% тейков ждут 1.5–2 дня даже на SL 4).</li>
+<li>Не зарегистрировано на фронте: ETH LB 310–500 (посчитано), SOL SL 7.5–8.</li>
+</ul></div>
+
+<h2>Все артефакты по EMA200</h2>
+<div class="tw"><table><thead><tr><th>Страница</th><th>Что в ней</th></tr></thead><tbody>
+<tr><th><a href="https://claude.ai/artifact/C3KtYaBKH7Uzhhag96f8Mx">Как устроен голос Б</a></th><td class="t">шаги выбора, веса, вето</td></tr>
+<tr><th><a href="https://claude.ai/artifact/SYwHm7EFFuQCGSrSvAJfXT">Голос Б против V2</a></th><td class="t">широкие плоскости SL 4–8 × TP 4–8R по половинкам и хорошим клеткам; BCH и BNB правее</td></tr>
+<tr><th><a href="https://claude.ai/artifact/Kxk6WJsjaK9ygsPEQ4coAn">Голоса на контрольных областях</a></th><td class="t">V2 №2, Б и урезанный V2 на зонах и контролях, случайная отсечка</td></tr>
+<tr><th><a href="https://claude.ai/artifact/DmgG6eAwqvhQ3VTCtmX2yJ">Кривые фильтров: зоны SOL</a></th><td class="t">37 фильтров на зонах BTC, ETH, SOL и двух новых областях SOL</td></tr>
+<tr><th><a href="https://claude.ai/artifact/WSmh2WqNsFj9NU1FMZ4RkN">Кривые фильтров на рабочих зонах</a></th><td class="t">выбранные пороги голоса и вето</td></tr>
+<tr><th><a href="https://claude.ai/artifact/225qiCV99ssv1xn52TPLYw">Итог голосования по зонам</a></th><td class="t">сравнение схем, выбор А, Б, В</td></tr>
+<tr><th><a href="https://claude.ai/artifact/KuQERwrBc4ap2C6qqo1VdR">Пересимуляция голосования</a></th><td class="t">голоса на зонах по клеткам</td></tr>
+<tr><th><a href="https://claude.ai/artifact/8umaEDEZpgZJUsh18yBNsJ">Калибровка EMA200 (старая)</a></th><td class="t">кривые на старой выборке, V1-200</td></tr>
+<tr><th><a href="https://claude.ai/artifact/4swkekFvksDyYY1Caeb9r2">Полная плоскость (заменена)</a></th><td class="t">ревью: старая выборка из 20 клеток</td></tr>
+</tbody></table></div>
+<p class="m">Поверхности на фронте (группа EMA200): btcusdt_p / ethusdt_p / solusdt_p .ema200.touch_vote_6d (голоса V1-200, V2 EMA200, «Голос зон» 1 = А, 2 = Б, 3 = В, касания ≤1/≤2/≤3) и solusdt_p.ema200.wide_sltp_6d (SOL SL 5–7 × TP 4–8R). Данные и код в облаке проекта: /mnt/project-files/ema200_calib/review (calib — калибровка; ctrl3 — проверки, широкие плоскости, отбор; dossier — эта страница). Копия этой страницы и таблиц лежит в репозитории research-results-artifacts, папка ema200_review_20261021.</p>
+</div>

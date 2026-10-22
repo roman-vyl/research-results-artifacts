@@ -1,0 +1,143 @@
+<title>Голоса на контрольных областях</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: verdict first, then one table per control area, bars inside the net column */
+:root{--bg:#f6f7f8;--panel:#fff;--fg:#1d2328;--muted:#5e6a73;--line:#dde2e6;--pos:#1f8a5b;--neg:#c4372f;--v2:#2d62c8;--zb:#11867f;--hl:#eef4ff;
+--sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181b;--panel:#1c2125;--fg:#e4e8eb;--muted:#9aa6ae;--line:#2e353a;--pos:#4cc38a;--neg:#ff6b5e;--v2:#7aa6ff;--zb:#3fd0c4;--hl:#1d2a3a;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14181b;--panel:#1c2125;--fg:#e4e8eb;--muted:#9aa6ae;--line:#2e353a;--pos:#4cc38a;--neg:#ff6b5e;--v2:#7aa6ff;--zb:#3fd0c4;--hl:#1d2a3a;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.5}
+.wrap{max-width:1100px;margin:0 auto;padding-block:28px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+h1{font-size:1.6rem;margin:0;text-wrap:balance}h2{font-size:1.15rem;margin:0}
+p{margin:0;max-width:72ch}.m{color:var(--muted);font-size:.85rem}
+.verdict{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px 18px;display:flex;flex-direction:column;gap:8px}
+.verdict ul{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px;max-width:80ch}
+.area{display:flex;flex-direction:column;gap:8px}.area header{display:flex;flex-direction:column;gap:2px}h3{font-size:1.05rem;margin:0}.grp{display:flex;flex-direction:column;gap:2px;border-top:2px solid var(--line);padding-top:14px}
+.tw{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-variant-numeric:tabular-nums;font-size:.9rem}
+th,td{padding:8px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}
+thead th{font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.02em}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+td{font-family:var(--mono)}tbody th{font-weight:600;white-space:nowrap}
+tr.v-v2 th{color:var(--v2)}tr.v-zB th{color:var(--zb)}tr.v-v2t th,tr.v-none th{color:var(--muted)}
+tr.win{background:var(--hl)}.pill{font-size:.7rem;border:1px solid currentColor;border-radius:9px;padding:0 6px;margin-left:4px}
+td.bar{display:flex;align-items:center;gap:8px;min-width:220px}.bt{flex:1;height:10px;background:var(--line);border-radius:2px;overflow:hidden}
+.bt i{display:block;height:100%}.bt i.pos{background:var(--pos)}.bt i.neg{background:var(--neg)}
+</style>
+<div class="wrap">
+<h1>Три голоса на областях, где их не калибровали</h1>
+<div class="verdict">
+<p><b>Итог.</b> Правило выбора и список выкинутых фильтров записаны до расчёта (review/ctrl3/RULES.md). Сравнивались V2 голос 2, голос зон Б и V2 голос 2 без пяти фильтров (B1 1h, D1, A2.3, C5 снизу, V1.3). Ниже сначала рабочие зоны BTC, ETH, SOL, затем семь контрольных областей.</p>
+<ul>
+<li><b>Урезанный V2 хуже везде.</b> Выкинутые по направлению кривых фильтры несли основную пользу. Правило «выкинуть, если кривая у одной монеты идёт против» оказалось плохим, его не применяем.</li>
+<li><b>V2 голос 2 и голос зон Б оба работают на чужих данных.</b> На контрольных областях BTC, ETH и SOL оба лучше случайной отсечки того же размера в 88–100% клеток. Это не подгонка под историю.</li>
+<li><b>Счёт на контроле 4:3 в пользу голоса Б:</b> у Б BTC SL6 (11,0к против 8,2к), ETH SL6, SOL SL6, ETH LB 310–500; у V2 SOL W6 (15,2к против 10,2к), BCH, BNB. На рабочих зонах Б впереди на всех трёх монетах, но там он и калибровался.</li>
+<li><b>Голос Б стабильнее.</b> Он лучше случая на всех семи контрольных областях (75–100%). V2 на BCH не лучше случая: он просто режет вдвое больше сделок.</li>
+<li><b>Можно выкинуть:</b> урезанный V2, V2 голоса 1, 3, 4, 5 (хуже V2 голоса 2 на всех проверках). Голоса зон А и В на SOL чуть лучше Б по нетто (SOL W6 14,0к против 10,2к; SOL SL6 9,6к и 9,1к против 8,8к), но реже все годы в плюсе; на ETH LB 310–500 А равен Б, В хуже; на BCH и BNB А и В не считались.</li>
+</ul>
+</div>
+<div class="grp"><h2>Зоны калибровки</h2><p class="m">На этих клетках подбирались пороги и веса голоса зон Б, поэтому здесь Б по определению в выигрыше. Это не проверка, а точка отсчёта.</p></div>
+<section class="area"><header><h3>BTC рабочая зона</h3><p>W9–11 × LB20–60, SL 4.25–4.75, TP 4.5–5R · 49 клеток<br><span class="m">своя зона калибровки, история до 2026-09-28 как на фронте</span></p></header>
+<div class="tw"><table><thead><tr><th>Голос</th><th>Медиана нетто с $10 000</th><th>Винрейт</th><th>Просадка</th><th>Все годы в плюсе</th><th>Сделок</th><th>Случайная отсечка того же размера</th></tr></thead><tbody><tr class="v-none"><th>Без фильтров</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:50.7%"></i></div><b>+5.0к</b></td>
+<td>25.2%</td><td>-15%</td><td>8%</td><td>353</td><td><span class="m">—</span></td></tr><tr class="v-v2"><th>V2 голос 2</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:80.5%"></i></div><b>+7.9к</b></td>
+<td>27.4%</td><td>-13%</td><td>61%</td><td>292</td><td>+7.9к → +2.7к<br><span class="m">лучше случая в 100% клеток</span></td></tr><tr class="v-zB win"><th>Голос зон Б <span class="pill">лучший</span></th>
+<td class="bar"><div class="bt"><i class="pos" style="width:100.0%"></i></div><b>+9.8к</b></td>
+<td>28.2%</td><td>-12%</td><td>61%</td><td>301</td><td>+9.8к → +3.5к<br><span class="m">лучше случая в 100% клеток</span></td></tr><tr class="v-v2t"><th>V2 голос 2 урезанный</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:65.1%"></i></div><b>+6.4к</b></td>
+<td>25.8%</td><td>-14%</td><td>24%</td><td>332</td><td><span class="m">—</span></td></tr></tbody></table></div></section>
+<section class="area"><header><h3>ETH рабочая зона</h3><p>W10–12 почти все LB, W13 до LB180, W9 на больших LB · 1194 клетки<br><span class="m">своя зона калибровки</span></p></header>
+<div class="tw"><table><thead><tr><th>Голос</th><th>Медиана нетто с $10 000</th><th>Винрейт</th><th>Просадка</th><th>Все годы в плюсе</th><th>Сделок</th><th>Случайная отсечка того же размера</th></tr></thead><tbody><tr class="v-none"><th>Без фильтров</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:82.9%"></i></div><b>+6.2к</b></td>
+<td>27.6%</td><td>-13%</td><td>48%</td><td>104</td><td><span class="m">—</span></td></tr><tr class="v-v2"><th>V2 голос 2</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:98.7%"></i></div><b>+7.3к</b></td>
+<td>29.7%</td><td>-12%</td><td>73%</td><td>87</td><td>+7.3к → +2.6к<br><span class="m">лучше случая в 100% клеток</span></td></tr><tr class="v-zB win"><th>Голос зон Б <span class="pill">лучший</span></th>
+<td class="bar"><div class="bt"><i class="pos" style="width:100.0%"></i></div><b>+7.4к</b></td>
+<td>30.2%</td><td>-11%</td><td>73%</td><td>92</td><td>+7.4к → +4.6к<br><span class="m">лучше случая в 100% клеток</span></td></tr><tr class="v-v2t"><th>V2 голос 2 урезанный</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:88.1%"></i></div><b>+6.6к</b></td>
+<td>28.2%</td><td>-12%</td><td>55%</td><td>102</td><td><span class="m">—</span></td></tr></tbody></table></div></section>
+<section class="area"><header><h3>SOL рабочая зона</h3><p>W10 × LB20–200, в основном SL5, TP 4–5R · 205 клеток<br><span class="m">своя зона калибровки</span></p></header>
+<div class="tw"><table><thead><tr><th>Голос</th><th>Медиана нетто с $10 000</th><th>Винрейт</th><th>Просадка</th><th>Все годы в плюсе</th><th>Сделок</th><th>Случайная отсечка того же размера</th></tr></thead><tbody><tr class="v-none"><th>Без фильтров</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:88.1%"></i></div><b>+4.9к</b></td>
+<td>26.4%</td><td>-19%</td><td>2%</td><td>111</td><td><span class="m">—</span></td></tr><tr class="v-v2"><th>V2 голос 2</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:96.3%"></i></div><b>+5.3к</b></td>
+<td>28.0%</td><td>-15%</td><td>9%</td><td>93</td><td>+5.3к → +2.1к<br><span class="m">лучше случая в 100% клеток</span></td></tr><tr class="v-zB win"><th>Голос зон Б <span class="pill">лучший</span></th>
+<td class="bar"><div class="bt"><i class="pos" style="width:100.0%"></i></div><b>+5.5к</b></td>
+<td>27.8%</td><td>-17%</td><td>7%</td><td>97</td><td>+5.5к → +3.4к<br><span class="m">лучше случая в 100% клеток</span></td></tr><tr class="v-v2t"><th>V2 голос 2 урезанный</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:67.9%"></i></div><b>+3.8к</b></td>
+<td>26.1%</td><td>-20%</td><td>1%</td><td>109</td><td><span class="m">—</span></td></tr></tbody></table></div></section>
+<div class="grp"><h2>Контрольные области</h2><p class="m">Клетки, на которых ни один голос не калибровался.</p></div>
+<section class="area"><header><h3>BTC SL6</h3><p>SL 5.5–6.5, TP 4–5R, без фильтров нетто ≥ 4к, DD ≥ −40% · 271 клетка<br><span class="m">другие стопы; часть входов общая с рабочей зоной</span></p></header>
+<div class="tw"><table><thead><tr><th>Голос</th><th>Медиана нетто с $10 000</th><th>Винрейт</th><th>Просадка</th><th>Все годы в плюсе</th><th>Сделок</th><th>Случайная отсечка того же размера</th></tr></thead><tbody><tr class="v-none"><th>Без фильтров</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:47.6%"></i></div><b>+5.2к</b></td>
+<td>25.5%</td><td>-19%</td><td>16%</td><td>208</td><td><span class="m">—</span></td></tr><tr class="v-v2"><th>V2 голос 2</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:74.4%"></i></div><b>+8.2к</b></td>
+<td>28.0%</td><td>-15%</td><td>41%</td><td>171</td><td>+8.2к → +2.4к<br><span class="m">лучше случая в 88% клеток</span></td></tr><tr class="v-zB win"><th>Голос зон Б <span class="pill">лучший</span></th>
+<td class="bar"><div class="bt"><i class="pos" style="width:100.0%"></i></div><b>+11.0к</b></td>
+<td>29.6%</td><td>-16%</td><td>53%</td><td>177</td><td>+11.0к → +3.0к<br><span class="m">лучше случая в 100% клеток</span></td></tr><tr class="v-v2t"><th>V2 голос 2 урезанный</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:48.3%"></i></div><b>+5.3к</b></td>
+<td>25.8%</td><td>-18%</td><td>14%</td><td>199</td><td><span class="m">—</span></td></tr></tbody></table></div></section>
+<section class="area"><header><h3>ETH SL6</h3><p>SL 5.5–6.5, TP 4–5R, без фильтров нетто ≥ 4к, DD ≥ −40% · 592 клетки<br><span class="m">другие стопы; часть входов общая с рабочей зоной</span></p></header>
+<div class="tw"><table><thead><tr><th>Голос</th><th>Медиана нетто с $10 000</th><th>Винрейт</th><th>Просадка</th><th>Все годы в плюсе</th><th>Сделок</th><th>Случайная отсечка того же размера</th></tr></thead><tbody><tr class="v-none"><th>Без фильтров</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:75.2%"></i></div><b>+5.5к</b></td>
+<td>27.1%</td><td>-15%</td><td>9%</td><td>98</td><td><span class="m">—</span></td></tr><tr class="v-v2"><th>V2 голос 2</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:94.1%"></i></div><b>+6.9к</b></td>
+<td>28.7%</td><td>-14%</td><td>15%</td><td>85</td><td>+6.9к → +2.1к<br><span class="m">лучше случая в 94% клеток</span></td></tr><tr class="v-zB win"><th>Голос зон Б <span class="pill">лучший</span></th>
+<td class="bar"><div class="bt"><i class="pos" style="width:100.0%"></i></div><b>+7.3к</b></td>
+<td>29.3%</td><td>-13%</td><td>14%</td><td>86</td><td>+7.3к → +4.3к<br><span class="m">лучше случая в 91% клеток</span></td></tr><tr class="v-v2t"><th>V2 голос 2 урезанный</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:82.5%"></i></div><b>+6.0к</b></td>
+<td>27.9%</td><td>-14%</td><td>12%</td><td>96</td><td><span class="m">—</span></td></tr></tbody></table></div></section>
+<section class="area"><header><h3>SOL W6</h3><p>W5–7 × LB230–300, SL 6–6.5, TP 4–5R · 144 клетки<br><span class="m">чистый контроль: никто из голосов эти клетки не видел</span></p></header>
+<div class="tw"><table><thead><tr><th>Голос</th><th>Медиана нетто с $10 000</th><th>Винрейт</th><th>Просадка</th><th>Все годы в плюсе</th><th>Сделок</th><th>Случайная отсечка того же размера</th></tr></thead><tbody><tr class="v-none"><th>Без фильтров</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:24.5%"></i></div><b>+3.7к</b></td>
+<td>24.0%</td><td>-58%</td><td>1%</td><td>153</td><td><span class="m">—</span></td></tr><tr class="v-v2 win"><th>V2 голос 2 <span class="pill">лучший</span></th>
+<td class="bar"><div class="bt"><i class="pos" style="width:100.0%"></i></div><b>+15.2к</b></td>
+<td>27.3%</td><td>-46%</td><td>46%</td><td>134</td><td>+15.2к → −0.6к<br><span class="m">лучше случая в 100% клеток</span></td></tr><tr class="v-zB"><th>Голос зон Б</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:66.8%"></i></div><b>+10.2к</b></td>
+<td>26.2%</td><td>-51%</td><td>19%</td><td>141</td><td>+10.2к → +3.1к<br><span class="m">лучше случая в 100% клеток</span></td></tr><tr class="v-v2t"><th>V2 голос 2 урезанный</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:26.7%"></i></div><b>+4.1к</b></td>
+<td>24.5%</td><td>-58%</td><td>0%</td><td>150</td><td><span class="m">—</span></td></tr></tbody></table></div></section>
+<section class="area"><header><h3>SOL SL6</h3><p>SL 5.5–6.5, TP 4–5R, без фильтров нетто ≥ 4к, DD ≥ −40% · 643 клетки (W7–11)<br><span class="m">другие стопы; часть входов общая с рабочей зоной SOL</span></p></header>
+<div class="tw"><table><thead><tr><th>Голос</th><th>Медиана нетто с $10 000</th><th>Винрейт</th><th>Просадка</th><th>Все годы в плюсе</th><th>Сделок</th><th>Случайная отсечка того же размера</th></tr></thead><tbody><tr class="v-none"><th>Без фильтров</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:90.3%"></i></div><b>+7.9к</b></td>
+<td>28.3%</td><td>-25%</td><td>11%</td><td>103</td><td><span class="m">—</span></td></tr><tr class="v-v2"><th>V2 голос 2</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:98.4%"></i></div><b>+8.7к</b></td>
+<td>29.7%</td><td>-22%</td><td>13%</td><td>88</td><td>+8.7к → +1.4к<br><span class="m">лучше случая в 100% клеток</span></td></tr><tr class="v-zB win"><th>Голос зон Б <span class="pill">лучший</span></th>
+<td class="bar"><div class="bt"><i class="pos" style="width:100.0%"></i></div><b>+8.8к</b></td>
+<td>29.5%</td><td>-22%</td><td>12%</td><td>91</td><td>+8.8к → +5.6к<br><span class="m">лучше случая в 99% клеток</span></td></tr><tr class="v-v2t"><th>V2 голос 2 урезанный</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:77.8%"></i></div><b>+6.8к</b></td>
+<td>28.1%</td><td>-27%</td><td>8%</td><td>101</td><td><span class="m">—</span></td></tr></tbody></table></div></section>
+<section class="area"><header><h3>ETH LB 310–500</h3><p>все W, SL 4.25–5, TP 4–5R · 2880 клеток<br><span class="m">чистый контроль</span></p></header>
+<div class="tw"><table><thead><tr><th>Голос</th><th>Медиана нетто с $10 000</th><th>Винрейт</th><th>Просадка</th><th>Все годы в плюсе</th><th>Сделок</th><th>Случайная отсечка того же размера</th></tr></thead><tbody><tr class="v-none"><th>Без фильтров</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:58.9%"></i></div><b>+1.4к</b></td>
+<td>27.4%</td><td>-9%</td><td>9%</td><td>24</td><td><span class="m">—</span></td></tr><tr class="v-v2"><th>V2 голос 2</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:79.6%"></i></div><b>+2.0к</b></td>
+<td>31.2%</td><td>-7%</td><td>11%</td><td>20</td><td>+2.0к → +0.4к<br><span class="m">лучше случая в 92% клеток</span></td></tr><tr class="v-zB win"><th>Голос зон Б <span class="pill">лучший</span></th>
+<td class="bar"><div class="bt"><i class="pos" style="width:100.0%"></i></div><b>+2.5к</b></td>
+<td>33.3%</td><td>-7%</td><td>24%</td><td>18</td><td>+2.5к → +0.8к<br><span class="m">лучше случая в 100% клеток</span></td></tr><tr class="v-v2t"><th>V2 голос 2 урезанный</th>
+<td class="bar"><div class="bt"><i class="pos" style="width:64.0%"></i></div><b>+1.6к</b></td>
+<td>28.0%</td><td>-9%</td><td>10%</td><td>24</td><td><span class="m">—</span></td></tr></tbody></table></div></section>
+<section class="area"><header><h3>BCH EMA200</h3><p>все W × LB, SL 4–5, TP 4–5R · 3132 клетки<br><span class="m">монета убыточна без фильтров, чистый контроль</span></p></header>
+<div class="tw"><table><thead><tr><th>Голос</th><th>Медиана нетто с $10 000</th><th>Винрейт</th><th>Просадка</th><th>Все годы в плюсе</th><th>Сделок</th><th>Случайная отсечка того же размера</th></tr></thead><tbody><tr class="v-none"><th>Без фильтров</th>
+<td class="bar"><div class="bt"><i class="neg" style="width:100.0%"></i></div><b>−6.3к</b></td>
+<td>16.2%</td><td>-64%</td><td>0%</td><td>179</td><td><span class="m">—</span></td></tr><tr class="v-v2 win"><th>V2 голос 2 <span class="pill">лучший</span></th>
+<td class="bar"><div class="bt"><i class="neg" style="width:73.9%"></i></div><b>−4.7к</b></td>
+<td>16.5%</td><td>-51%</td><td>0%</td><td>144</td><td>−4.7к → −4.4к<br><span class="m">лучше случая в 35% клеток</span></td></tr><tr class="v-zB"><th>Голос зон Б</th>
+<td class="bar"><div class="bt"><i class="neg" style="width:75.8%"></i></div><b>−4.8к</b></td>
+<td>16.7%</td><td>-53%</td><td>0%</td><td>144</td><td>−4.8к → −5.8к<br><span class="m">лучше случая в 75% клеток</span></td></tr><tr class="v-v2t"><th>V2 голос 2 урезанный</th>
+<td class="bar"><div class="bt"><i class="neg" style="width:91.6%"></i></div><b>−5.8к</b></td>
+<td>16.5%</td><td>-60%</td><td>0%</td><td>164</td><td><span class="m">—</span></td></tr></tbody></table></div></section>
+<section class="area"><header><h3>BNB EMA200</h3><p>все W × LB, SL 4–5, TP 4–5R · 3132 клетки<br><span class="m">монета убыточна без фильтров, чистый контроль</span></p></header>
+<div class="tw"><table><thead><tr><th>Голос</th><th>Медиана нетто с $10 000</th><th>Винрейт</th><th>Просадка</th><th>Все годы в плюсе</th><th>Сделок</th><th>Случайная отсечка того же размера</th></tr></thead><tbody><tr class="v-none"><th>Без фильтров</th>
+<td class="bar"><div class="bt"><i class="neg" style="width:100.0%"></i></div><b>−1.9к</b></td>
+<td>20.0%</td><td>-34%</td><td>0%</td><td>146</td><td><span class="m">—</span></td></tr><tr class="v-v2 win"><th>V2 голос 2 <span class="pill">лучший</span></th>
+<td class="bar"><div class="bt"><i class="pos" style="width:3.0%"></i></div><b>+0.1к</b></td>
+<td>21.9%</td><td>-19%</td><td>0%</td><td>116</td><td>+0.1к → −1.0к<br><span class="m">лучше случая в 77% клеток</span></td></tr><tr class="v-zB"><th>Голос зон Б</th>
+<td class="bar"><div class="bt"><i class="neg" style="width:35.9%"></i></div><b>−0.7к</b></td>
+<td>21.3%</td><td>-25%</td><td>0%</td><td>124</td><td>−0.7к → −1.8к<br><span class="m">лучше случая в 89% клеток</span></td></tr><tr class="v-v2t"><th>V2 голос 2 урезанный</th>
+<td class="bar"><div class="bt"><i class="neg" style="width:88.2%"></i></div><b>−1.6к</b></td>
+<td>20.5%</td><td>-33%</td><td>0%</td><td>139</td><td><span class="m">—</span></td></tr></tbody></table></div></section>
+<p class="m">Медианы по всем клеткам области. Нетто от $10 000 с комиссией 0.04% на сторону, сложный процент, одна позиция. «Все годы в плюсе»: доля клеток, где каждый год с сделками в плюсе. Случайная отсечка: столько же входов, сколько блокирует голос, выбраны случайно среди входов с посчитанными фильтрами, 5 повторов, медиана; формат «голос → случайная». Сверка: медианы рабочих зон совпадают с прежними расчётами (без фильтров 5,0/6,2/4,9к, голос Б 9,8/7,4/5,5к); клетка SOL W6 LB290 SL6 TP4R с V2 голос 2 даёт 106 сделок и +32 787, как на фронте; голос Б и без фильтров совпадают с поверхностями SOL, ETH LB 310–500, BCH и BNB до доллара. Код и таблицы: /mnt/project-files/ema200_calib/review/ctrl3. Только replay, Engine не запускался, на фронт ничего не добавлено.</p>
+</div>

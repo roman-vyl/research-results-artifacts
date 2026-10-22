@@ -1,0 +1,48 @@
+<title>Как устроен голос Б</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: numbered steps (a real sequence), then the vote formula, voter table, veto table */
+:root{--bg:#f6f7f8;--panel:#fff;--fg:#1d2328;--muted:#5e6a73;--line:#dde2e6;--acc:#11867f;--neg:#c4372f;--sans:'IBM Plex Sans',system-ui,sans-serif;--mono:'IBM Plex Mono',ui-monospace,monospace}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#14181b;--panel:#1c2125;--fg:#e4e8eb;--muted:#9aa6ae;--line:#2e353a;--acc:#3fd0c4;--neg:#ff6b5e;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#14181b;--panel:#1c2125;--fg:#e4e8eb;--muted:#9aa6ae;--line:#2e353a;--acc:#3fd0c4;--neg:#ff6b5e;color-scheme:dark}
+body{background:var(--bg);color:var(--fg);font-family:var(--sans);line-height:1.55}
+.wrap{max-width:980px;margin:0 auto;padding-block:28px 40px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;flex-direction:column;gap:22px}
+h1{font-size:1.6rem;margin:0;text-wrap:balance}h2{font-size:1.2rem;margin:0}p{margin:0;max-width:75ch}.m{color:var(--muted);font-size:.85rem}
+ol.steps{margin:0;padding:0;list-style:none;counter-reset:s;display:flex;flex-direction:column;gap:10px}
+ol.steps li{counter-increment:s;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px 12px 52px;position:relative;max-width:85ch}
+ol.steps li::before{content:counter(s);position:absolute;left:14px;top:11px;width:26px;height:26px;border-radius:50%;background:var(--acc);color:var(--bg);font:600 .85rem var(--mono);display:flex;align-items:center;justify-content:center}
+ol.steps b{display:block}
+.formula{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+code{font-family:var(--mono);font-size:.9em}
+.tw{overflow-x:auto;background:var(--panel);border:1px solid var(--line);border-radius:6px}
+table{border-collapse:collapse;width:100%;min-width:680px;font-size:.88rem;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--line);vertical-align:middle}thead th{font-size:.75rem;color:var(--muted)}td{font-family:var(--mono)}td.t{font-family:var(--sans)}
+tbody tr:last-child th,tbody tr:last-child td{border-bottom:0}
+.bar{display:inline-block;width:70px;height:8px;background:var(--line);border-radius:2px;margin-right:8px;vertical-align:middle;overflow:hidden}.bar i{display:block;height:100%;background:var(--acc)}
+</style>
+<div class="wrap">
+<h1>Как мы выбрали голос зон Б и как он голосует</h1>
+<p class="m">Восстановлено по файлам калибровки 2026-10-21 (review/calib: zc.py, curves.py, pick.py, pick2.py, override.py, vote2.py, pick2.json, vetos.json).</p>
+<h2>Последовательность</h2>
+<ol class="steps">
+<li><b>Рабочие зоны (16:04).</b> Ты утвердил зоны без фильтров, TP от 4R, SL от 4: BTC W9–11 × LB20–60; ETH W10–12 почти все LB, W13 до LB180, W9 на больших LB; SOL W10 × LB20–200. Это 49, 1194 и 205 клеток.</li>
+<li><b>Выборка входов.</b> Все уникальные входы, которые берёт хотя бы одна клетка зоны: BTC 447, ETH 372, SOL 218. Метка входа: доля клеток зоны, где он закрылся стопом. Его R: средний net R там же. База стопов 75.6 / 78.4 / 74.5%.</li>
+<li><b>Кривые по 37 фильтрам.</b> Общая сетка порогов на три монеты: от медианы до 1-го или 99-го процентиля и дальше до края. На каждом пороге видно, сколько отрезано, долю стопов среди отрезанного и сэкономленный R сверх случайной отсечки того же размера.</li>
+<li><b>Автоматический стартовый порог.</b> Самый мягкий порог, при котором выполнены три условия. Ни одной монете фильтр не вредит: доля стопов в отрезанном не ниже её базы, экономия R не хуже случайной. По трём монетам вместе отрезанные заметно хуже среднего (снижение доли тейков r ≥ 0.095). И это держится на 70% более строгих порогов. Пороги общие для трёх монет.</li>
+<li><b>Твоя правка на глаз (16:26–16:42).</b> Для голоса Б ты поставил B1 15m ≥ 1.37 (общий и для BTC) и A4 ≥ 10.3 (подходит и BTC). Убрал RSI14, потому что выбор был «странный». V1.2 сверху выкинул: нет корреляции. A6 и C3.2 сделал только вето. Где есть общий порог (C3.1, A2.2, D1), ETH и SOL берут его.</li>
+<li><b>Вето.</b> Самый мягкий порог, после которого до самого края на всех трёх монетах отрезанное на ~90% и больше стопы, без минимума сделок. Плюс твоё вето C3.2 ≥ 3.43. Вето A6 только для ETH+SOL, в голос Б не входит.</li>
+<li><b>Сравнение схем (16:43–17:04).</b> На этих порогах сравнили лестницу, линейную, квадратичную, «по числу голосов» и шумовое ИЛИ, каждую на нескольких уровнях срабатывания. В трёх версиях: (1) общие фильтры и общие веса, (2) общие фильтры и веса по монете, (3) отдельный набор ETH+SOL. Ты выбрал А, Б и В. <b>Б = версия 1 (всё общее), линейные веса, порог 0.75.</b></li>
+</ol>
+<h2>Как голос Б решает по одному входу</h2>
+<div class="formula">
+<p><b>1. Вес фильтра</b> = насколько отрезанное хуже среднего на трёх монетах вместе: <code>r = 1 − (1 − доля стопов в отрезанном) ÷ (1 − база)</code>, то есть на сколько падает доля тейков. Вес <code>w = r ÷ 0.55</code>, не больше 1. r = 0.55 соответствует примерно 90% стопов при базе 78%. Веса одни на все монеты.</p>
+<p><b>2. Сумма.</b> Каждый сработавший фильтр добавляет свой вес. Варианты одного индикатора не складываются, берётся больший (нога 5m/15m/1h как B1, V1.1–V1.4 как V1).</p>
+<p><b>3. Блок</b>, если сумма ≥ 0.75 или сработало любое вето. Один D1 (вес 0.86) блокирует сам. Остальным нужна пара, например V1.1 (0.66) вместе с A5 (0.20) или с A3 (0.39).</p>
+</div>
+<h2>Голосующие фильтры голоса Б</h2>
+<div class="tw"><table><thead><tr><th>Фильтр</th><th>Что меряет</th><th>Порог</th><th>Стопов в отрезанном (3 монеты)</th><th>Отрезано входов</th><th>Вес</th><th>Откуда порог</th></tr></thead><tbody><tr><th>D1</th><td class='t'>тело дневки</td><td>≤ -0.274</td><td>87.5%</td><td>70</td><td><span class='bar'><i style='width:86%'></i></span>0.86</td><td class='t'>авто</td></tr><tr><th>B1 15m</th><td class='t'>нога 15m</td><td>≥ 1.37</td><td>85.0%</td><td>27</td><td><span class='bar'><i style='width:66%'></i></span>0.66</td><td class='t'>твой порог</td></tr><tr><th>V1.1</th><td class='t'>сумма объёма</td><td>≤ 0.0574</td><td>85.0%</td><td>26</td><td><span class='bar'><i style='width:66%'></i></span>0.66</td><td class='t'>авто</td></tr><tr><th>A2.2</th><td class='t'>удар</td><td>≤ 0.158</td><td>83.4%</td><td>42</td><td><span class='bar'><i style='width:54%'></i></span>0.54</td><td class='t'>авто</td></tr><tr><th>C3.1</th><td class='t'>глубина D ÷ H</td><td>≥ 0.604</td><td>81.7%</td><td>132</td><td><span class='bar'><i style='width:41%'></i></span>0.41</td><td class='t'>авто</td></tr><tr><th>V2.2</th><td class='t'>Force на свечу</td><td>≥ 5.11</td><td>81.7%</td><td>39</td><td><span class='bar'><i style='width:41%'></i></span>0.41</td><td class='t'>авто</td></tr><tr><th>A3</th><td class='t'>скорость отката ÷ роста</td><td>≥ 3.33</td><td>81.4%</td><td>60</td><td><span class='bar'><i style='width:39%'></i></span>0.39</td><td class='t'>авто</td></tr><tr><th>B3</th><td class='t'>импульс в ATR</td><td>≤ 9.59</td><td>80.5%</td><td>94</td><td><span class='bar'><i style='width:32%'></i></span>0.32</td><td class='t'>авто</td></tr><tr><th>A5</th><td class='t'>ER отката − ER импульса</td><td>≥ 0.26</td><td>78.9%</td><td>83</td><td><span class='bar'><i style='width:20%'></i></span>0.20</td><td class='t'>авто</td></tr><tr><th>A4</th><td class='t'>длительность отката ÷ роста</td><td>≥ 10.3</td><td>78.3%</td><td>19</td><td><span class='bar'><i style='width:15%'></i></span>0.15</td><td class='t'>твой порог</td></tr></tbody></table></div>
+<h2>Вето голоса Б (блок сразу)</h2>
+<div class="tw"><table><thead><tr><th>Фильтр</th><th>Что меряет</th><th>Порог</th><th>Откуда</th></tr></thead><tbody><tr><th>A1</th><td class='t'>отношение Δ-баров</td><td>≤ -0.0125</td><td class='t'>авто</td></tr><tr><th>C5</th><td class='t'>C5</td><td>≥ 0.685</td><td class='t'>авто</td></tr><tr><th>A3</th><td class='t'>скорость отката ÷ роста</td><td>≥ 15.8</td><td class='t'>авто</td></tr><tr><th>V1.1</th><td class='t'>сумма объёма</td><td>≤ 0.0441</td><td class='t'>авто</td></tr><tr><th>V1.2</th><td class='t'>объём своего цвета</td><td>≤ 0.0422</td><td class='t'>авто</td></tr><tr><th>V1.3</th><td class='t'>объём на свечу</td><td>≤ 0.0747</td><td class='t'>авто</td></tr><tr><th>V1.4</th><td class='t'>топ-10% объёма</td><td>≤ 0.084</td><td class='t'>авто</td></tr><tr><th>B3</th><td class='t'>импульс в ATR</td><td>≤ 4.65</td><td class='t'>авто</td></tr><tr><th>C3.2</th><td class='t'>D/H волны n ÷ n−1</td><td>≥ 3.43</td><td class='t'>твоё</td></tr></tbody></table></div>
+<p class="m">Голоса А и В собраны из тех же порогов. А: версия 3 (общие фильтры плюс отдельные для ETH+SOL и для BTC, веса по монете), лестница до 1, порог 0.75. В: версия 3, шумовое ИЛИ, порог 0.6. Голос Б единственный, где и фильтры, и веса, и порог общие для всех монет.</p>
+</div>

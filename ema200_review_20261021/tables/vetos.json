@@ -1,0 +1,64 @@
+[
+{
+"m": "a1s",
+"side": "low",
+"T": -0.0125,
+"set": "ALL"
+},
+{
+"m": "c5",
+"side": "high",
+"T": 0.685,
+"set": "ALL"
+},
+{
+"m": "a3",
+"side": "high",
+"T": 15.8,
+"set": "ALL"
+},
+{
+"m": "v11",
+"side": "low",
+"T": 0.0441,
+"set": "ALL"
+},
+{
+"m": "v12",
+"side": "low",
+"T": 0.0422,
+"set": "ALL"
+},
+{
+"m": "v13",
+"side": "low",
+"T": 0.0747,
+"set": "ALL"
+},
+{
+"m": "v14",
+"side": "low",
+"T": 0.084,
+"set": "ALL"
+},
+{
+"m": "b3h",
+"side": "low",
+"T": 4.65,
+"set": "ALL"
+},
+{
+"m": "c32",
+"side": "high",
+"T": 3.43,
+"set": "ALL",
+"owner": true
+},
+{
+"m": "a6",
+"side": "high",
+"T": 18.7,
+"set": "ES",
+"owner": true
+}
+]
