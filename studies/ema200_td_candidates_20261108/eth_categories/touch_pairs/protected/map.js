@@ -1,0 +1,21 @@
+const el=id=>document.getElementById(id);
+const num=(x,n=2)=>Number(x).toLocaleString('ru-RU',{maximumFractionDigits:n});
+function parse(s){const [head,...lines]=s.trim().split(/\r?\n/);const keys=head.split(',');return lines.map(line=>Object.fromEntries(line.split(',').map((v,i)=>[keys[i],v===''?null:(Number.isFinite(+v)?+v:v)])));}
+function table(id,headers,rows){el(id).innerHTML='<thead><tr>'+headers.map(x=>'<th>'+x+'</th>').join('')+'</tr></thead><tbody>'+rows.map(row=>'<tr>'+row.map(x=>'<td>'+x+'</td>').join('')+'</tr>').join('')+'</tbody>'}
+const names={frequent:'Частая 5m',frequent_cap4:'Частая ≤4',prior_strong:'Прежняя TD · Δ33',prior_frequent:'Прежняя TD · Δ10',distance_2:'D 2R','15m':'15m','1h':'1h',native_cap4_plane:'≤4 на SL 4,5 / TP 3,5'};
+let rows=[],freq=[],cases=[],stress=[],token=0;
+const samples=[.1,.5,1,1.5,2,3,5,7,9,9.5,10,12,15,20,21,25,30,32,33,35,40,50,60,75,100];
+const menu=(id,vs,value)=>{el(id).replaceChildren(...vs.map(v=>new Option(id==='caps'&&v===0?'все':v,v)));if(vs.includes(value))el(id).value=value};
+const unique=xs=>[...new Set(xs)].sort((a,b)=>a-b);
+function draw(){if(!rows.length)return;const t=+el('t').value,d=+el('d').value,cap=+el('caps').value,tf=+el('tf').value,all=el('view').value==='full';
+const show=x=>all||samples.includes(x.h);const filter=r=>r.d===d&&r.t===t&&r.cap===cap;const base=rows.find(r=>r.tf===0&&filter(r));if(!base)return;
+el('base').textContent='Без Protected: Net Won пары $'+num(base.pair,0)+' · WR '+num(base.wrpair)+'% · сделки второй ноги '+base.n+' · выходы выше TP '+base.above+'.';
+table('grid',['ΔADX','Protected до Runner','В ту же свечу','% до Runner','Вышли по BE','Спасено','Потеряно','Дошли до Runner','Выше TP','Net Won пары, $','Δ к TD, $','WR пары, %'],rows.filter(r=>filter(r)&&r.tf===tf&&show(r)).map(r=>[r.h,r.protected,r.samebar,num(r.freq,1),r.be,r.saved,r.hurt,r.runner,r.above,num(r.pair,0),num(r.dnet,0),num(r.wrpair)]));
+table('freq',['TF','ΔADX','Protected до Runner, %','Переход с учётом совпадений, %','Выход по BE, %','Спасено, %','Потеряно, %','Средняя Δ Net Won, $','Плюс к TD, %'],freq.filter(r=>r.tf===tf&&show(r)).map(r=>[r.tf,r.h,num(r.freq),num(r.eventrate),num(r.be),num(r.save),num(r.harm),num(r.delta,0),num(100*r.profits,1)]));}
+async function load(key,t,d,cap,tf){let id=++token;try{el('base').textContent='Загрузка…';const url='data/'+key+'.csv.gz';let res=await fetch(url);if(!res.ok)throw Error(res.status);let buf=await res.arrayBuffer(),bytes=new Uint8Array(buf);let csv=bytes[0]===31&&bytes[1]===139?await new Response(new Blob([buf]).stream().pipeThrough(new DecompressionStream('gzip'))).text():new TextDecoder().decode(buf);if(id!==token)return;rows=parse(csv);el('download').href=url;menu('t',unique(rows.map(x=>x.t)),t);menu('d',unique(rows.filter(x=>x.t===+el('t').value).map(x=>x.d)),d);el('caps').value=cap;el('tf').value=tf;draw();}catch(e){if(id===token)el('base').textContent='Ошибка загрузки: '+e.message}}
+const layersByCase={frequent:'4.75_5',prior_strong:'4.75_5',distance_2:'4.5_5','15m':'5_5','1h':'5_5',native_cap4_plane:'4.5_3.5'};
+function preset(key){let x=cases.find(r=>r.case===key);el('layer').value=layersByCase[key];return load(el('layer').value,x.t,x.d,x.cap,x.tf)}
+async function init(){const files=['layers.json','frequency.csv','cases.csv','open_sensitivity.csv'];const [ls,fs,cs,ss]=await Promise.all(files.map(async(f,i)=>{let r=await fetch(f);if(!r.ok)throw Error(f);return i?parse(await r.text()):r.json()}));freq=fs;cases=cs;stress=ss;menu('layer',ls);menu('caps',[0,1,2,3,4],0);
+table('years',['Точка','TD DD, %','Protected DD, %','2021','2022','2023','2024','2025','2026','Net с гэпами, $'],cases.map(r=>[names[r.case],num(r.td_dd),num(r.be_dd),...Array.from({length:6},(_,i)=>num(r['dy'+(2021+i)],1)),num(stress.find(v=>v.case===r.case).open_fill_pair,0)]));
+document.querySelectorAll('[data-case]').forEach(b=>b.onclick=()=>preset(b.dataset.case));el('layer').onchange=()=>load(el('layer').value,+el('t').value,+el('d').value,+el('caps').value,+el('tf').value);el('t').onchange=()=>{menu('d',unique(rows.filter(x=>x.t===+el('t').value).map(x=>x.d)),+el('d').value);draw()};for(const n of ['tf','caps','view','d'])el(n).onchange=draw;await preset('frequent');}
+init().catch(e=>el('base').textContent='Ошибка: '+e.message);

@@ -1,0 +1,18 @@
+{
+  "frequent": {
+    "status": "matched",
+    "run_id": "run_2e5616efa96d40f59953bbaea113ea7c",
+    "trades": 221,
+    "be": 46,
+    "solo_net": "25708.76146009004890422631400",
+    "market_data_hash": "edf2aa62840d12738f18aff7be70d77dcb012307cbd32c9101e6b7e8a6c31707"
+  },
+  "15m": {
+    "status": "unverified",
+    "reason": "Server disconnected without sending a response."
+  },
+  "1h": {
+    "status": "unverified",
+    "reason": "Server disconnected without sending a response."
+  }
+}
