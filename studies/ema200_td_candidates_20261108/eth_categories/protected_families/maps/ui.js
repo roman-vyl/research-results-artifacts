@@ -21,6 +21,7 @@ function controls(){
  $('groups').innerHTML=Object.entries(families).map(([k,label])=>'<button data-g="'+k+'" class="'+(k===s.g?'on':'')+'">'+label+'</button>').join('');
  select('sl',opts(SL));select('tp',opts(TP));select('tf',[[5,'5m'],[15,'15m'],[60,'1h']]);select('metric',Object.entries(names));
  select('t',opts(ticks(1.5,s.tp-.5)));select('d',opts(ticks(1.25,Math.min(s.t,3))));
+ for(const k of ['t','d'])$(k+'Buttons').innerHTML=Array.from($(k).options,o=>'<button data-param="'+k+'" data-v="'+o.value+'" aria-pressed="'+o.selected+'" class="'+(o.selected?'on':'')+'">'+o.textContent+'</button>').join('');
  for(const k of ['ref','min','max','low','high','h','kind','blockTF'])$(k).value=s[k];
  $('ref').disabled=rates.includes(s.metric);
 }
@@ -132,3 +133,5 @@ async function search(){
 }
 $('find').onclick=()=>search().catch(e=>{$('found').textContent=e.message});
 $('hits').onclick=e=>{const tr=e.target.closest('tr[data-hit]');if(!tr)return;const b=foundRows[+tr.dataset.hit];Object.assign(s,{sl:b.sl,tp:b.tp,tf:b.tf,t:b.t,d:b.d,h:b.h0,low:Math.max(.05,b.h0-1),high:Math.min(100,b.h0+1)});draw();$('comparison').scrollIntoView({block:'center'})};
+
+for(const k of ['t','d'])$(k+'Buttons').onclick=e=>{if(e.target.dataset.param===k){s[k]=+e.target.dataset.v;draw()}};
