@@ -1,0 +1,26 @@
+{
+ "state": "isolated_frontend_fixture",
+ "engine_run": "run_2638d40b02d945edbe591f50c9304a3c",
+ "candidate_id": "cand_9a805bc187b68795d10c4e13",
+ "coords": {
+  "width": "7",
+  "lookback": "170",
+  "sl": "4.5",
+  "tp_ratio": "3.5",
+  "touch_max": "4",
+  "w8_or_sp109": "1",
+  "td_trigger_r": null,
+  "td_distance_r": null,
+  "adx15_rise": "23"
+ },
+ "matched_trades": 206,
+ "net_won": "29594.57614319380066139837217",
+ "runtime": {
+  "candidate_id": "cand_9a805bc187b68795d10c4e13",
+  "file": "ethusdt_p-cand_9a805bc187b68795d10c4e13.json",
+  "strategy_instance_id": "ema_pullback:c134dce0b2f5f283d8bcd36e",
+  "enabled": false,
+  "journal": "ok"
+ },
+ "stop_semantics": "ADX cancels the fixed target. Native initial_r_trailing_stop uses trigger_r=trail_distance_r=2.75; its first stop update requires MFE >= 2.75R. The research replay trails immediately upon runner activation. Realised exits match on this sample."
+}
