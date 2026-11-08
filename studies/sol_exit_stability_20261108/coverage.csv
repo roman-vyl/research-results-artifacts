@@ -1,0 +1,9 @@
+family,mode,n,dominates,near,stable,beats_net
+wide,td,70875,0,0,245,16
+wide,protected_td,52305750,25,184,137923,12286
+wide,runner,4483350,0,0,5929,3488
+wide,be_only,498150,0,0,0,145
+narrow,td,113400,4,14,1138,608
+narrow,protected_td,83689200,4469,9853,673662,281990
+narrow,runner,7173360,4624,4878,310251,31794
+narrow,be_only,797040,666,856,41606,4192
