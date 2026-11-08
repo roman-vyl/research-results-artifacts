@@ -1,0 +1,116 @@
+[
+ {
+  "label": "stars",
+  "new_entries": 0,
+  "removed_entries": 0
+ },
+ {
+  "label": "TD frequent",
+  "new_entries": 17,
+  "removed_entries": 0,
+  "b_solo_no": 19966.752659422502,
+  "b_pair_if_off": 23119.09992465457
+ },
+ {
+  "label": "TD more profit",
+  "new_entries": 17,
+  "removed_entries": 0,
+  "b_solo_no": 18484.506831132323,
+  "b_pair_if_off": 22380.60466088655
+ },
+ {
+  "label": "TD broad distance",
+  "new_entries": 18,
+  "removed_entries": 3,
+  "b_solo_no": 22335.620858803544,
+  "b_pair_if_off": 24322.350057420856
+ },
+ {
+  "label": "ADX all",
+  "new_entries": 17,
+  "removed_entries": 0,
+  "b_solo_no": 25554.44901422971,
+  "b_pair_if_off": 26008.28517126752,
+  "b_activations_by_year": {
+   "2022": 3,
+   "2023": 1,
+   "2024": 2,
+   "2025": 1,
+   "2026": 1
+  }
+ },
+ {
+  "label": "ADX four",
+  "new_entries": 16,
+  "removed_entries": 9,
+  "b_solo_no": 24296.33219140558,
+  "b_pair_if_off": 25369.744978577874,
+  "b_activations_by_year": {
+   "2022": 3,
+   "2023": 1,
+   "2024": 2,
+   "2025": 1,
+   "2026": 1
+  }
+ },
+ {
+  "label": "two ADX",
+  "new_entries": 17,
+  "removed_entries": 2,
+  "a_solo_no": 23339.62670201711,
+  "a_pair_if_off": 27471.846473846213,
+  "a_activations_by_year": {
+   "2021": 2,
+   "2022": 4,
+   "2023": 1,
+   "2026": 2
+  },
+  "b_solo_no": 25554.44901422971,
+  "b_pair_if_off": 25453.788903222812,
+  "b_activations_by_year": {
+   "2022": 3,
+   "2023": 1,
+   "2024": 2,
+   "2025": 1,
+   "2026": 1
+  }
+ },
+ {
+  "label": "strict equal net",
+  "new_entries": 54,
+  "removed_entries": 51,
+  "a_solo_no": 22922.02556216669,
+  "a_pair_if_off": 22749.75645955535,
+  "a_activations_by_year": {
+   "2021": 2,
+   "2022": 3
+  },
+  "b_solo_no": 17124.318587082962,
+  "b_pair_if_off": 23471.878018844458,
+  "b_activations_by_year": {
+   "2021": 3,
+   "2022": 2,
+   "2023": 2,
+   "2024": 5,
+   "2025": 1,
+   "2026": 1
+  }
+ },
+ {
+  "label": "strict geometry",
+  "new_entries": 28,
+  "removed_entries": 82,
+  "a_solo_no": 22773.449117537988,
+  "a_pair_if_off": 21672.543411493254,
+  "a_activations_by_year": {
+   "2021": 1,
+   "2022": 3
+  },
+  "b_solo_no": 16289.92532244911,
+  "b_pair_if_off": 22910.911427265168,
+  "b_activations_by_year": {
+   "2022": 1,
+   "2026": 2
+  }
+ }
+]
