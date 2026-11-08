@@ -1,0 +1,56 @@
+{
+ "experiment_id": "ethusdt_p.ema200.w8_or_sp109_no_spot_5d",
+ "candidate_id": "cand_fecc375f07a7165ed8f40236",
+ "coords": {
+  "lookback": "170",
+  "protected_5m": "10",
+  "sl": "4.75",
+  "td_distance_r": "1.25",
+  "td_trigger_r": "2.5",
+  "touch_max": null,
+  "tp_ratio": "3.5",
+  "w8_or_sp109": "1",
+  "width": "7"
+ },
+ "run_id": "run_ef791c4b74c9437ea950c5634a1a2dfc",
+ "matched_fills": 223,
+ "checked_engine_summary_metrics": 22,
+ "selected_metrics": {
+  "blocked_share": 0.422481,
+  "cumulative_net_r": 114.475577,
+  "max_drawdown_pct": -0.086503,
+  "net_pnl": 26907.788301,
+  "net_pnl_long": 17119.469962,
+  "net_pnl_short": 9788.318339,
+  "net_r_long": 69.946608,
+  "net_r_short": 44.528969,
+  "profit_factor": 2.086682,
+  "realised_trade_count": 223,
+  "return_2021": 0.373073,
+  "return_2022": 0.402156,
+  "return_2023": 0.136242,
+  "return_2024": 0.342414,
+  "return_2025": 0.261506,
+  "return_2026": -0.00372,
+  "return_pct": 2.690779,
+  "trades_long": 134,
+  "trades_short": 89,
+  "win_rate": 0.376682,
+  "worst_year": -0.00372,
+  "years_up": 5
+ },
+ "runtime_check": {
+  "export": {
+   "candidate_id": "cand_fecc375f07a7165ed8f40236",
+   "file": "ethusdt_p-cand_fecc375f07a7165ed8f40236.json",
+   "strategy_instance_id": "ema_pullback:18f3be0776bbda8e553dbecc",
+   "enabled": false
+  },
+  "validation": {
+   "instance": "ema_pullback:18f3be0776bbda8e553dbecc",
+   "enabled": false,
+   "valid": true
+  },
+  "isolated": true
+ }
+}
