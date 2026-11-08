@@ -1,0 +1,51 @@
+{
+  "wide": {
+    "run_id": "run_30cf3f1a3bd34a91a7cecd98a0d641b5",
+    "matched_trades": 86,
+    "net": "48877.82676774698623177357594",
+    "coords": {
+      "width": 9,
+      "lookback": 70,
+      "sl": 6.0,
+      "tp_ratio": 4.5,
+      "touch_max": null,
+      "w8_or_sp109": 1,
+      "td_trigger_r": 4.0,
+      "td_distance_r": 1.25,
+      "protected_adx_1h": 0.25,
+      "protected_adx_15m": null
+    },
+    "candidate_id": "cand_6f69efca373e7f93cdd27f81",
+    "surface_state": "same",
+    "runtime_status": {
+      "present": false
+    },
+    "strategy_instance_id": "ema_pullback:2572e3c11ddc9591d012997e"
+  },
+  "narrow": {
+    "run_id": "run_1180f8137a034ab6a48f2913187b2e88",
+    "matched_trades": 131,
+    "net": "90529.09895527662742008696736",
+    "coords": {
+      "width": 4,
+      "lookback": 240,
+      "sl": 6.0,
+      "tp_ratio": 6.0,
+      "touch_max": null,
+      "w8_or_sp109": 1,
+      "td_trigger_r": 4.5,
+      "td_distance_r": 1.0,
+      "protected_adx_1h": null,
+      "protected_adx_15m": 23.5
+    },
+    "candidate_id": "cand_6c016bc17722686a38e84e63",
+    "surface_state": "same",
+    "runtime_status": {
+      "present": false
+    },
+    "strategy_instance_id": "ema_pullback:aacb4daeb27ac45499c41a0d"
+  },
+  "surface_experiment_id": "solusdt_p.ema200.w8_or_sp109_no_spot_5d",
+  "runtime_catalog_checked_in_temporary_directory": true,
+  "native_trades_total": 217
+}
